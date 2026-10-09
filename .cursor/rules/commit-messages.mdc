@@ -1,0 +1,34 @@
+---
+description: Conventional Commits for generated and written commit messages
+alwaysApply: true
+---
+
+# Commit messages
+
+Use Conventional Commits. One subject line, under 100 characters:
+
+`type: short imperative description`
+
+Types:
+
+- `feat`: a new feature
+- `fix`: a bug fix
+- `docs`: documentation only
+- `style`: formatting or whitespace, no behavior change
+- `refactor`: a code change that is not a fix or a feature
+- `perf`: a performance improvement
+- `test`: tests only
+- `build`: the build system or dependencies
+- `ci`: CI configuration
+- `chore`: maintenance that fits none of the types above
+
+- Lowercase type, colon, single space
+- Imperative present tense (`add`, `fix`, `update`)
+- No trailing period
+- English
+- Do not list files or restate the diff
+
+```
+fix: correct workout stat calculation
+feat: add weekly progress chart
+```
