@@ -1,5 +1,7 @@
+import { SettingsScreen } from "@/components/settings/SettingsScreen";
+
+// Thin page. The draft until Save lives in SettingsScreen.
+
 export default function SettingsPage() {
-  return (
-    <p className="text-muted-foreground">Your profile and weekly goal.</p>
-  );
+  return <SettingsScreen />;
 }

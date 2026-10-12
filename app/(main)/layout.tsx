@@ -1,14 +1,22 @@
+import { FitnessProvider } from "@/components/fitness/fitness-context";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 
+/**
+ * Shared shell for the five screens. The (main) group is not part of the URL.
+ * The provider lives here so it survives page changes.
+ * Only main scrolls, so the menu stays on screen.
+ */
 export default function MainLayout({ children }: LayoutProps<"/">) {
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      <Sidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <Header />
-        <main className="flex-1 overflow-y-auto p-8">{children}</main>
+    <FitnessProvider>
+      <div className="flex h-screen overflow-hidden bg-background">
+        <Sidebar />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <Header />
+          <main className="flex-1 overflow-y-auto p-8">{children}</main>
+        </div>
       </div>
-    </div>
+    </FitnessProvider>
   );
 }

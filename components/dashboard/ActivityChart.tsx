@@ -1,21 +1,24 @@
 "use client";
 
-import { weeklyActivity } from "@/lib/fitness-data";
+import { ChartFrame } from "@/components/fitness/chart-frame";
 import {
   CartesianGrid,
   Line,
   LineChart,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
 
-export function ActivityChart() {
+export function ActivityChart({
+  data,
+}: {
+  data: Array<{ day: string; minutes: number }>;
+}) {
   return (
-    <div className="h-64">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={weeklyActivity}>
+    <ChartFrame>
+      {({ width, height }) => (
+        <LineChart width={width} height={height} data={data}>
           <CartesianGrid stroke="var(--border)" vertical={false} />
           <XAxis dataKey="day" tickLine={false} axisLine={false} />
           <YAxis tickLine={false} axisLine={false} />
@@ -28,7 +31,7 @@ export function ActivityChart() {
             dot={false}
           />
         </LineChart>
-      </ResponsiveContainer>
-    </div>
+      )}
+    </ChartFrame>
   );
 }

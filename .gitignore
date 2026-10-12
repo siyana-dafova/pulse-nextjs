@@ -44,3 +44,6 @@ next-env.d.ts
 # local agent rules
 AGENTS.md
 CLAUDE.md
+
+# local notes, not part of the repo
+/docs

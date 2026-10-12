@@ -68,6 +68,7 @@
   --accent: #f5f3ff;
   --accent-foreground: #7c3aed;
   --destructive: #ef4444;
+  /* Not in the neutral shadcn theme. Used by done badges and warnings. */
   --success: #16a34a;
   --success-foreground: #ffffff;
   --warning: #f59e0b;
@@ -91,6 +92,7 @@
   --sidebar-ring: #7c3aed;
 }
 
+/* Tokens are defined, but no screen adds the dark class. The app stays on :root. */
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);

@@ -15,10 +15,10 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Pages
 
-| Path | Page |
-| --- | --- |
-| `/` | Dashboard |
-| `/workouts` | Workouts |
-| `/goals` | Goals |
-| `/reports` | Reports |
-| `/settings` | Settings |
+| Path        | Page      |
+| ----------- | --------- |
+| `/`         | Dashboard |
+| `/workouts` | Workouts  |
+| `/goals`    | Goals     |
+| `/reports`  | Reports   |
+| `/settings` | Settings  |

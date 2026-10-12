@@ -1,3 +1,7 @@
+import { ReportsScreen } from "@/components/reports/ReportsScreen";
+
+// Thin page. The period and summary live in ReportsScreen.
+
 export default function ReportsPage() {
-  return <p className="text-muted-foreground">Your progress over time.</p>;
+  return <ReportsScreen />;
 }

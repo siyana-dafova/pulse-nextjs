@@ -9,6 +9,7 @@ import {
   type NavItem,
 } from "@/components/layout/navigation";
 
+/** `/` matches only itself. Otherwise the dashboard would stay active on every page. */
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(`${href}/`);

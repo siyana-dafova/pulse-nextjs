@@ -28,6 +28,8 @@ export const settingsNavigation: NavItem = {
 
 const pages = [...mainNavigation, settingsNavigation];
 
+/** Header title. Exact match first, then a nested path. `/` does not match the other pages. */
+
 export function titleForPath(pathname: string) {
   const exact = pages.find((item) => item.href === pathname);
   if (exact) return exact.name;

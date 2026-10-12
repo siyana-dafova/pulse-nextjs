@@ -1,3 +1,7 @@
+import { GoalsScreen } from "@/components/goals/GoalsScreen";
+
+// Thin page. Daily and weekly calculations live in GoalsScreen.
+
 export default function GoalsPage() {
-  return <p className="text-muted-foreground">Your daily goals.</p>;
+  return <GoalsScreen />;
 }
