@@ -5,13 +5,7 @@
  * ResponsiveContainer often measures 0 on the first frame and the chart disappears.
  */
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { useCallback, useRef, useState, type ReactNode } from "react";
 
 export function ChartFrame({
   children,
@@ -19,11 +13,6 @@ export function ChartFrame({
   children: (size: { width: number; height: number }) => ReactNode;
 }) {
   const [size, setSize] = useState({ width: 480, height: 256 });
-
-  useEffect(() => {
-    // Marks that the frame mounted. No screen in this project reads it.
-    document.documentElement.dataset.chartReady = "yes";
-  }, []);
   const observerRef = useRef<ResizeObserver | null>(null);
 
   const ref = useCallback((node: HTMLDivElement | null) => {
