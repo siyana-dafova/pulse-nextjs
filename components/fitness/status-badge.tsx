@@ -1,8 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import {
-  workoutStatusLabels,
-  type WorkoutStatus,
-} from "@/lib/fitness-data";
+import { workoutStatusLabels, type WorkoutStatus } from "@/lib/fitness-data";
 
 export function statusBadgeClass(status: WorkoutStatus) {
   switch (status) {

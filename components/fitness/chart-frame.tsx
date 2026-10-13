@@ -5,7 +5,13 @@
  * ResponsiveContainer often measures 0 on the first frame and the chart disappears.
  */
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 
 export function ChartFrame({
   children,

@@ -18,7 +18,9 @@ export function SettingsScreen() {
   const { profile, updateProfile } = useFitness();
   const [name, setName] = useState(profile.name);
   const [email, setEmail] = useState(profile.email);
-  const [weeklyGoal, setWeeklyGoal] = useState(String(profile.weeklyWorkoutGoal));
+  const [weeklyGoal, setWeeklyGoal] = useState(
+    String(profile.weeklyWorkoutGoal),
+  );
   const [units, setUnits] = useState<Units>(profile.units);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);

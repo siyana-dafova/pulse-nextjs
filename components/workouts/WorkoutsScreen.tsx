@@ -73,7 +73,9 @@ export function WorkoutsScreen({ openNew }: { openNew: boolean }) {
 
   const visible = workouts
     .filter((workout) => typeFilter === "all" || workout.type === typeFilter)
-    .filter((workout) => statusFilter === "all" || workout.status === statusFilter)
+    .filter(
+      (workout) => statusFilter === "all" || workout.status === statusFilter,
+    )
     .sort(compareWorkoutNewest);
 
   function openCreate() {
@@ -160,7 +162,9 @@ export function WorkoutsScreen({ openNew }: { openNew: boolean }) {
                 {visible.map((workout) => (
                   <TableRow key={workout.id}>
                     <TableCell>{formatDisplayDate(workout.date)}</TableCell>
-                    <TableCell className="font-medium">{workout.name}</TableCell>
+                    <TableCell className="font-medium">
+                      {workout.name}
+                    </TableCell>
                     <TableCell className="text-muted-foreground">
                       {workoutTypeLabels[workout.type]}
                     </TableCell>

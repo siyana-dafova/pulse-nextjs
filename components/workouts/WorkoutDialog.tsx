@@ -87,7 +87,8 @@ export function WorkoutDialog({
     const nextErrors: Errors = {};
     const name = draft.name.trim();
     const minutes = Number(draft.minutes);
-    const distance = draft.distance.trim() === "" ? undefined : Number(draft.distance);
+    const distance =
+      draft.distance.trim() === "" ? undefined : Number(draft.distance);
 
     if (!name) nextErrors.name = "Enter a name.";
     if (!draft.date) nextErrors.date = "Choose a date.";
@@ -122,7 +123,9 @@ export function WorkoutDialog({
   return (
     <Modal
       title={workout ? "Edit workout" : "Add workout"}
-      description={workout ? "Update this session." : "Add a session to your log."}
+      description={
+        workout ? "Update this session." : "Add a session to your log."
+      }
       onClose={() => onOpenChange(false)}
     >
       <form
@@ -132,128 +135,138 @@ export function WorkoutDialog({
           save();
         }}
       >
+        <Field label="Name" error={errors.name}>
+          <Input
+            value={draft.name}
+            onChange={(event) =>
+              setDraft((current) => ({ ...current, name: event.target.value }))
+            }
+            aria-invalid={Boolean(errors.name)}
+          />
+        </Field>
 
-          <Field label="Name" error={errors.name}>
-            <Input
-              value={draft.name}
-              onChange={(event) =>
-                setDraft((current) => ({ ...current, name: event.target.value }))
+        <Field label="Type">
+          <Select
+            items={typeItems}
+            value={draft.type}
+            // false: a modal Base UI select traps focus and fights this Modal.
+            modal={false}
+            onValueChange={(value) => {
+              if (
+                value !== "strength" &&
+                value !== "cardio" &&
+                value !== "mobility"
+              ) {
+                return;
               }
-              aria-invalid={Boolean(errors.name)}
-            />
-          </Field>
+              setDraft((current) => ({
+                ...current,
+                type: value,
+                distance: value === "cardio" ? current.distance : "",
+              }));
+            }}
+          >
+            <SelectTrigger className="w-full" aria-label="Type">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {workoutTypes.map((type) => (
+                <SelectItem key={type} value={type}>
+                  {workoutTypeLabels[type]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </Field>
 
-          <Field label="Type">
-            <Select
-              items={typeItems}
-              value={draft.type}
-              // false: a modal Base UI select traps focus and fights this Modal.
-              modal={false}
-              onValueChange={(value) => {
-                if (value !== "strength" && value !== "cardio" && value !== "mobility") {
-                  return;
-                }
-                setDraft((current) => ({
-                  ...current,
-                  type: value,
-                  distance: value === "cardio" ? current.distance : "",
-                }));
-              }}
-            >
-              <SelectTrigger className="w-full" aria-label="Type">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {workoutTypes.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {workoutTypeLabels[type]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
+        <Field label="Date" error={errors.date}>
+          <Input
+            type="date"
+            value={draft.date}
+            onChange={(event) =>
+              setDraft((current) => ({ ...current, date: event.target.value }))
+            }
+            aria-invalid={Boolean(errors.date)}
+          />
+        </Field>
 
-          <Field label="Date" error={errors.date}>
-            <Input
-              type="date"
-              value={draft.date}
-              onChange={(event) =>
-                setDraft((current) => ({ ...current, date: event.target.value }))
-              }
-              aria-invalid={Boolean(errors.date)}
-            />
-          </Field>
+        <Field label="Minutes" error={errors.minutes}>
+          <Input
+            type="number"
+            min={1}
+            step={1}
+            value={draft.minutes}
+            onChange={(event) =>
+              setDraft((current) => ({
+                ...current,
+                minutes: event.target.value,
+              }))
+            }
+            aria-invalid={Boolean(errors.minutes)}
+          />
+        </Field>
 
-          <Field label="Minutes" error={errors.minutes}>
+        {draft.type === "cardio" ? (
+          <Field label={`Distance (${units})`} error={errors.distance}>
             <Input
               type="number"
-              min={1}
-              step={1}
-              value={draft.minutes}
+              min={0}
+              step="0.1"
+              value={draft.distance}
               onChange={(event) =>
-                setDraft((current) => ({ ...current, minutes: event.target.value }))
+                setDraft((current) => ({
+                  ...current,
+                  distance: event.target.value,
+                }))
               }
-              aria-invalid={Boolean(errors.minutes)}
+              aria-invalid={Boolean(errors.distance)}
             />
           </Field>
+        ) : null}
 
-          {draft.type === "cardio" ? (
-            <Field label={`Distance (${units})`} error={errors.distance}>
-              <Input
-                type="number"
-                min={0}
-                step="0.1"
-                value={draft.distance}
-                onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    distance: event.target.value,
-                  }))
-                }
-                aria-invalid={Boolean(errors.distance)}
-              />
-            </Field>
-          ) : null}
+        <Field label="Status">
+          <Select
+            items={statusItems}
+            value={draft.status}
+            // false: a modal Base UI select traps focus and fights this Modal.
+            modal={false}
+            onValueChange={(value) => {
+              if (
+                value !== "done" &&
+                value !== "planned" &&
+                value !== "skipped"
+              ) {
+                return;
+              }
+              setDraft((current) => ({ ...current, status: value }));
+            }}
+          >
+            <SelectTrigger className="w-full" aria-label="Status">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {workoutStatuses.map((status) => (
+                <SelectItem key={status} value={status}>
+                  {workoutStatusLabels[status]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </Field>
 
-          <Field label="Status">
-            <Select
-              items={statusItems}
-              value={draft.status}
-              // false: a modal Base UI select traps focus and fights this Modal.
-              modal={false}
-              onValueChange={(value) => {
-                if (value !== "done" && value !== "planned" && value !== "skipped") {
-                  return;
-                }
-                setDraft((current) => ({ ...current, status: value }));
-              }}
-            >
-              <SelectTrigger className="w-full" aria-label="Status">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {workoutStatuses.map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {workoutStatusLabels[status]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-
-          <ModalFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="button" onClick={save}>
-              Save
-            </Button>
-          </ModalFooter>
-        </form>
+        <ModalFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+          >
+            Cancel
+          </Button>
+          <Button type="button" onClick={save}>
+            Save
+          </Button>
+        </ModalFooter>
+      </form>
     </Modal>
   );
 }

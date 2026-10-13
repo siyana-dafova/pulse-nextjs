@@ -8,13 +8,16 @@ import { PageToolbar } from "@/components/fitness/page-toolbar";
 import { ProgressBar } from "@/components/fitness/progress-bar";
 import { GoalDialog } from "@/components/goals/GoalDialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  todayISO,
-  type Goal,
-} from "@/lib/fitness-data";
+import { todayISO, type Goal } from "@/lib/fitness-data";
 import {
   doneWorkouts,
   goalCurrent,
@@ -171,7 +174,12 @@ function GoalCard({
           <Button type="button" size="sm" variant="outline" onClick={onEdit}>
             Edit
           </Button>
-          <Button type="button" size="sm" variant="destructive" onClick={onDelete}>
+          <Button
+            type="button"
+            size="sm"
+            variant="destructive"
+            onClick={onDelete}
+          >
             Delete
           </Button>
         </CardAction>

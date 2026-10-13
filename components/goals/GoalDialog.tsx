@@ -79,7 +79,9 @@ export function GoalDialog({
       return;
     }
     if (kindDisabled(draft.kind)) {
-      setError(`A ${goalKindLabels[draft.kind].toLowerCase()} goal already exists.`);
+      setError(
+        `A ${goalKindLabels[draft.kind].toLowerCase()} goal already exists.`,
+      );
       return;
     }
 
@@ -91,7 +93,9 @@ export function GoalDialog({
     };
     const saved = goal ? updateGoal(goal.id, input) : addGoal(input);
     if (!saved) {
-      setError(`A ${goalKindLabels[draft.kind].toLowerCase()} goal already exists.`);
+      setError(
+        `A ${goalKindLabels[draft.kind].toLowerCase()} goal already exists.`,
+      );
       return;
     }
     onOpenChange(false);
@@ -110,98 +114,108 @@ export function GoalDialog({
           save();
         }}
       >
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="goal-label">Label</Label>
+          <Input
+            id="goal-label"
+            value={draft.label}
+            onChange={(event) =>
+              setDraft((current) => ({ ...current, label: event.target.value }))
+            }
+          />
+        </div>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="goal-label">Label</Label>
-            <Input
-              id="goal-label"
-              value={draft.label}
-              onChange={(event) =>
-                setDraft((current) => ({ ...current, label: event.target.value }))
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="goal-target">Target</Label>
+          <Input
+            id="goal-target"
+            type="number"
+            min={1}
+            step="any"
+            value={draft.target}
+            onChange={(event) =>
+              setDraft((current) => ({
+                ...current,
+                target: event.target.value,
+              }))
+            }
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <Label>Kind</Label>
+          <Select
+            items={kindItems}
+            value={draft.kind}
+            // false: the list sits inside our Modal, not a Base UI Dialog.
+            modal={false}
+            onValueChange={(value) => {
+              if (
+                value !== "manual" &&
+                value !== "workouts" &&
+                value !== "minutes"
+              ) {
+                return;
               }
-            />
-          </div>
+              setDraft((current) => ({ ...current, kind: value }));
+              setError("");
+            }}
+          >
+            <SelectTrigger className="w-full" aria-label="Kind">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {kinds.map((kind) => (
+                <SelectItem
+                  key={kind}
+                  value={kind}
+                  disabled={kindDisabled(kind)}
+                >
+                  {goalKindLabels[kind]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
+        {draft.kind === "manual" ? (
           <div className="flex flex-col gap-2">
-            <Label htmlFor="goal-target">Target</Label>
+            <Label htmlFor="goal-current">Current</Label>
             <Input
-              id="goal-target"
+              id="goal-current"
               type="number"
-              min={1}
+              min={0}
               step="any"
-              value={draft.target}
+              value={draft.current}
               onChange={(event) =>
-                setDraft((current) => ({ ...current, target: event.target.value }))
+                setDraft((current) => ({
+                  ...current,
+                  current: event.target.value,
+                }))
               }
             />
           </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            Current progress is counted from today&apos;s done workouts.
+          </p>
+        )}
 
-          <div className="flex flex-col gap-2">
-            <Label>Kind</Label>
-            <Select
-              items={kindItems}
-              value={draft.kind}
-              // false: the list sits inside our Modal, not a Base UI Dialog.
-              modal={false}
-              onValueChange={(value) => {
-                if (value !== "manual" && value !== "workouts" && value !== "minutes") {
-                  return;
-                }
-                setDraft((current) => ({ ...current, kind: value }));
-                setError("");
-              }}
-            >
-              <SelectTrigger className="w-full" aria-label="Kind">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {kinds.map((kind) => (
-                  <SelectItem key={kind} value={kind} disabled={kindDisabled(kind)}>
-                    {goalKindLabels[kind]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        {error ? <p className="text-xs text-destructive">{error}</p> : null}
 
-          {draft.kind === "manual" ? (
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="goal-current">Current</Label>
-              <Input
-                id="goal-current"
-                type="number"
-                min={0}
-                step="any"
-                value={draft.current}
-                onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    current: event.target.value,
-                  }))
-                }
-              />
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              Current progress is counted from today&apos;s done workouts.
-            </p>
-          )}
-
-          {error ? <p className="text-xs text-destructive">{error}</p> : null}
-
-          <ModalFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="button" onClick={save}>
-              Save
-            </Button>
-          </ModalFooter>
-        </form>
+        <ModalFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+          >
+            Cancel
+          </Button>
+          <Button type="button" onClick={save}>
+            Save
+          </Button>
+        </ModalFooter>
+      </form>
     </Modal>
   );
 }

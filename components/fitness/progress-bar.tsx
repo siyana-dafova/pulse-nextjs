@@ -7,7 +7,8 @@ export function ProgressBar({
   target: number;
   size?: "sm" | "md";
 }) {
-  const percent = target <= 0 ? 0 : Math.min(100, Math.round((current / target) * 100));
+  const percent =
+    target <= 0 ? 0 : Math.min(100, Math.round((current / target) * 100));
   const height = size === "md" ? "h-3" : "h-2";
 
   return (

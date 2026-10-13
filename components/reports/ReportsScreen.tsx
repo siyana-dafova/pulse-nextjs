@@ -106,7 +106,9 @@ export function ReportsScreen() {
             <Stat label="Avg minutes" value={String(summary.average)} />
             <Stat
               label="Completion"
-              value={summary.completion == null ? "—" : `${summary.completion}%`}
+              value={
+                summary.completion == null ? "—" : `${summary.completion}%`
+              }
             />
           </div>
 
@@ -128,7 +130,9 @@ export function ReportsScreen() {
                   <div key={item.type}>
                     <div className="flex justify-between text-sm">
                       <span>{workoutTypeLabels[item.type]}</span>
-                      <span className="text-muted-foreground">{item.minutes}</span>
+                      <span className="text-muted-foreground">
+                        {item.minutes}
+                      </span>
                     </div>
                     <div className="mt-2 h-2 rounded-full bg-muted">
                       <div
@@ -161,15 +165,17 @@ export function ReportsScreen() {
                 </TableHeader>
                 <TableBody>
                   {weeks.map((week) => {
-                    const rows = workoutsInRange(workouts, week.start, week.end);
+                    const rows = workoutsInRange(
+                      workouts,
+                      week.start,
+                      week.end,
+                    );
                     const completion = completionPercent(rows);
                     return (
                       <TableRow key={week.start}>
                         <TableCell>{week.label}</TableCell>
                         <TableCell>{rows.length}</TableCell>
-                        <TableCell>
-                          {sumMinutes(doneWorkouts(rows))}
-                        </TableCell>
+                        <TableCell>{sumMinutes(doneWorkouts(rows))}</TableCell>
                         <TableCell>
                           {completion == null ? "—" : `${completion}%`}
                         </TableCell>

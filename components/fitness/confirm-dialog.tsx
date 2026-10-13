@@ -19,7 +19,11 @@ export function ConfirmDialog({
   if (!open) return null;
 
   return (
-    <Modal title={title} description={description} onClose={() => onOpenChange(false)}>
+    <Modal
+      title={title}
+      description={description}
+      onClose={() => onOpenChange(false)}
+    >
       <ModalFooter>
         <Button variant="outline" onClick={() => onOpenChange(false)}>
           Cancel
