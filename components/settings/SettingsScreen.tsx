@@ -30,7 +30,7 @@ export function SettingsScreen() {
     setError("");
   }
 
-  function save() {
+  async function save() {
     const nextName = name.trim();
     const nextEmail = email.trim();
     const goal = Number(weeklyGoal);
@@ -51,7 +51,7 @@ export function SettingsScreen() {
       return;
     }
 
-    updateProfile({
+    await updateProfile({
       name: nextName,
       email: nextEmail,
       weeklyWorkoutGoal: goal,

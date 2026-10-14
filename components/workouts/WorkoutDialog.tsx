@@ -83,7 +83,7 @@ export function WorkoutDialog({
   );
   const [errors, setErrors] = useState<Errors>({});
 
-  function save() {
+  async function save() {
     const nextErrors: Errors = {};
     const name = draft.name.trim();
     const minutes = Number(draft.minutes);
@@ -115,8 +115,8 @@ export function WorkoutDialog({
       distance: draft.type === "cardio" ? distance : undefined,
     };
 
-    if (workout) updateWorkout(workout.id, input);
-    else addWorkout(input);
+    if (workout) await updateWorkout(workout.id, input);
+    else await addWorkout(input);
     onOpenChange(false);
   }
 

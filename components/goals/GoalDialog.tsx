@@ -19,6 +19,7 @@ import {
   type GoalInput,
   type GoalKind,
 } from "@/lib/fitness-data";
+import { GoalKindTakenError } from "@/lib/fitness-store";
 
 const kinds: GoalKind[] = ["manual", "workouts", "minutes"];
 
@@ -61,7 +62,7 @@ export function GoalDialog({
     return goals.some((item) => item.kind === kind && item.id !== goal?.id);
   }
 
-  function save() {
+  async function save() {
     const label = draft.label.trim();
     const target = Number(draft.target);
     const current = Number(draft.current);
@@ -91,8 +92,12 @@ export function GoalDialog({
       current: draft.kind === "manual" ? current : 0,
       kind: draft.kind,
     };
-    const saved = goal ? updateGoal(goal.id, input) : addGoal(input);
-    if (!saved) {
+    // The check above uses this tab's list. The store has the final say.
+    try {
+      if (goal) await updateGoal(goal.id, input);
+      else await addGoal(input);
+    } catch (caught) {
+      if (!(caught instanceof GoalKindTakenError)) throw caught;
       setError(
         `A ${goalKindLabels[draft.kind].toLowerCase()} goal already exists.`,
       );

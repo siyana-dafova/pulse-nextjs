@@ -1,128 +1,111 @@
 "use client";
 
 /**
- * The only app state. It lives in the tab's memory.
+ * The only app state. It is loaded from the store after mount.
  * The layout keeps this mounted, so pages share it.
  */
 
 import {
   createContext,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
 import {
-  createSeedWorkouts,
-  initialGoals,
   initialProfile,
-  normalizeWorkout,
+  todayISO,
   type Goal,
   type GoalInput,
   type Profile,
   type Workout,
   type WorkoutInput,
 } from "@/lib/fitness-data";
+import { localFitnessStore } from "@/lib/fitness-store";
 
 type FitnessContextValue = {
+  /** False until the store has loaded. Until then the arrays are empty and the profile is the default. */
+  ready: boolean;
   workouts: Workout[];
   goals: Goal[];
   profile: Profile;
-  addWorkout: (input: WorkoutInput) => void;
-  updateWorkout: (id: string, input: WorkoutInput) => void;
-  deleteWorkout: (id: string) => void;
-  addGoal: (input: GoalInput) => boolean;
-  updateGoal: (id: string, input: GoalInput) => boolean;
-  deleteGoal: (id: string) => void;
-  updateProfile: (profile: Profile) => void;
+  addWorkout: (input: WorkoutInput) => Promise<void>;
+  updateWorkout: (id: string, input: WorkoutInput) => Promise<void>;
+  deleteWorkout: (id: string) => Promise<void>;
+  /** Rejects with `GoalKindTakenError` when a second workouts or minutes goal is added. */
+  addGoal: (input: GoalInput) => Promise<void>;
+  updateGoal: (id: string, input: GoalInput) => Promise<void>;
+  deleteGoal: (id: string) => Promise<void>;
+  updateProfile: (profile: Profile) => Promise<void>;
 };
 
 const FitnessContext = createContext<FitnessContextValue | null>(null);
 
-/** Only one `workouts` goal and one `minutes` goal. Manual goals can repeat. */
-function kindTaken(goals: Goal[], input: GoalInput, ignoreId?: string) {
-  if (input.kind === "manual") return false;
-  return goals.some((goal) => goal.kind === input.kind && goal.id !== ignoreId);
-}
-
 export function FitnessProvider({ children }: { children: ReactNode }) {
-  // Pass the function, not its result: React calls it once. Otherwise the seed rebuilds every render.
-  const [workouts, setWorkouts] = useState(createSeedWorkouts);
-  const [goals, setGoals] = useState(() =>
-    initialGoals.map((goal) => ({ ...goal })),
-  );
+  // Empty until the store loads after mount. The server render has no access to it.
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [goals, setGoals] = useState<Goal[]>([]);
   const [profile, setProfile] = useState(() => ({ ...initialProfile }));
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    // Strict Mode mounts twice in dev. Only the latest load may write state.
+    let cancelled = false;
+    localFitnessStore.load(todayISO()).then((state) => {
+      if (cancelled) return;
+      setWorkouts(state.workouts);
+      setGoals(state.goals);
+      setProfile(state.profile);
+      setReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const value = useMemo<FitnessContextValue>(
     () => ({
+      ready,
       workouts,
       goals,
       profile,
-      addWorkout(input) {
-        setWorkouts((current) => [
-          { id: crypto.randomUUID(), ...normalizeWorkout(input) },
-          ...current,
-        ]);
+      // State changes only after the store accepts the write, and uses the record it returns.
+      async addWorkout(input) {
+        const workout = await localFitnessStore.addWorkout(input);
+        setWorkouts((current) => [workout, ...current]);
       },
-      updateWorkout(id, input) {
+      async updateWorkout(id, input) {
+        const workout = await localFitnessStore.updateWorkout(id, input);
         setWorkouts((current) =>
-          current.map((workout) =>
-            workout.id === id ? { id, ...normalizeWorkout(input) } : workout,
-          ),
+          current.map((item) => (item.id === id ? workout : item)),
         );
       },
-      deleteWorkout(id) {
+      async deleteWorkout(id) {
+        await localFitnessStore.deleteWorkout(id);
         setWorkouts((current) =>
           current.filter((workout) => workout.id !== id),
         );
       },
-      addGoal(input) {
-        if (kindTaken(goals, input)) return false;
-        setGoals((current) => [
-          ...current,
-          {
-            id: crypto.randomUUID(),
-            label: input.label.trim(),
-            target: input.target,
-            current: input.kind === "manual" ? input.current : 0,
-            kind: input.kind,
-          },
-        ]);
-        return true;
+      async addGoal(input) {
+        const goal = await localFitnessStore.addGoal(input);
+        setGoals((current) => [...current, goal]);
       },
-      updateGoal(id, input) {
-        if (kindTaken(goals, input, id)) return false;
+      async updateGoal(id, input) {
+        const goal = await localFitnessStore.updateGoal(id, input);
         setGoals((current) =>
-          current.map((goal) =>
-            goal.id === id
-              ? {
-                  ...goal,
-                  label: input.label.trim(),
-                  target: input.target,
-                  // Derived goals keep the previous current. The screen computes it from workouts.
-                  current:
-                    input.kind === "manual" ? input.current : goal.current,
-                  kind: input.kind,
-                }
-              : goal,
-          ),
+          current.map((item) => (item.id === id ? goal : item)),
         );
-        return true;
       },
-      deleteGoal(id) {
+      async deleteGoal(id) {
+        await localFitnessStore.deleteGoal(id);
         setGoals((current) => current.filter((goal) => goal.id !== id));
       },
-      updateProfile(next) {
-        setProfile({
-          ...next,
-          name: next.name.trim(),
-          email: next.email.trim(),
-          // The form also checks 1–14. The clamp stays here if this is called from somewhere else.
-          weeklyWorkoutGoal: Math.min(14, Math.max(1, next.weeklyWorkoutGoal)),
-        });
+      async updateProfile(next) {
+        setProfile(await localFitnessStore.updateProfile(next));
       },
     }),
-    [goals, profile, workouts],
+    [goals, profile, ready, workouts],
   );
 
   return (

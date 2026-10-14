@@ -1,4 +1,5 @@
 import { FitnessProvider } from "@/components/fitness/fitness-context";
+import { ReadyGate } from "@/components/fitness/ready-gate";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 
@@ -14,7 +15,9 @@ export default function MainLayout({ children }: LayoutProps<"/">) {
         <Sidebar />
         <div className="flex min-w-0 flex-1 flex-col">
           <Header />
-          <main className="flex-1 overflow-y-auto p-8">{children}</main>
+          <main className="flex-1 overflow-y-auto p-8">
+            <ReadyGate>{children}</ReadyGate>
+          </main>
         </div>
       </div>
     </FitnessProvider>
