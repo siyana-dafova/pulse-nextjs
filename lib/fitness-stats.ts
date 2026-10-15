@@ -51,6 +51,11 @@ export function workoutsInRange(
   return workouts.filter((workout) => inRange(workout.date, start, end));
 }
 
+/** Workouts on or before `day`, so a session planned for later does not lower completion yet. */
+export function workoutsUntil(workouts: Workout[], day: string) {
+  return workouts.filter((workout) => workout.date <= day);
+}
+
 export function doneWorkouts(workouts: Workout[]) {
   return workouts.filter((workout) => workout.status === "done");
 }
@@ -169,9 +174,12 @@ export function dashboardStats(
 ) {
   const currentWeek = weekRange(today);
   const previousWeek = weekRange(today, 1);
-  const doneThisWeek = doneWorkouts(
-    workoutsInRange(workouts, currentWeek.start, currentWeek.end),
+  const thisWeek = workoutsInRange(
+    workouts,
+    currentWeek.start,
+    currentWeek.end,
   );
+  const doneThisWeek = doneWorkouts(thisWeek);
   const doneLastWeek = doneWorkouts(
     workoutsInRange(workouts, previousWeek.start, previousWeek.end),
   );
@@ -190,7 +198,8 @@ export function dashboardStats(
   const stats: DashboardStat[] = [
     {
       label: "Workouts this week",
-      value: String(doneThisWeek.length),
+      // Done out of every workout in the week, so a skipped or planned session still counts as part of the plan.
+      value: `${doneThisWeek.length} / ${thisWeek.length}`,
       ...workoutDelta,
     },
     {
@@ -223,13 +232,14 @@ export function minutesByType(workouts: Workout[]) {
   }));
 }
 
-export function reportSummary(workouts: Workout[]) {
+/** `workouts` counts done only. Completion ignores sessions after `today`. */
+export function reportSummary(workouts: Workout[], today: string) {
   const done = doneWorkouts(workouts);
   const minutes = sumMinutes(done);
   return {
-    workouts: workouts.length,
+    workouts: done.length,
     minutes,
     average: done.length === 0 ? 0 : Math.round(minutes / done.length),
-    completion: completionPercent(workouts),
+    completion: completionPercent(workoutsUntil(workouts, today)),
   };
 }

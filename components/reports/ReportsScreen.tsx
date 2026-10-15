@@ -32,6 +32,7 @@ import {
   weekdayActivity,
   weeksInPeriod,
   workoutsInRange,
+  workoutsUntil,
 } from "@/lib/fitness-stats";
 
 const typeColors: Record<WorkoutType, string> = {
@@ -48,7 +49,7 @@ export function ReportsScreen() {
   const start = weeks[0].start;
   const end = weeks[weeks.length - 1].end;
   const inPeriod = workoutsInRange(workouts, start, end);
-  const summary = reportSummary(inPeriod);
+  const summary = reportSummary(inPeriod, today);
   const types = minutesByType(inPeriod);
   const maxTypeMinutes = Math.max(...types.map((item) => item.minutes), 1);
 
@@ -170,12 +171,15 @@ export function ReportsScreen() {
                       week.start,
                       week.end,
                     );
-                    const completion = completionPercent(rows);
+                    const done = doneWorkouts(rows);
+                    const completion = completionPercent(
+                      workoutsUntil(rows, today),
+                    );
                     return (
                       <TableRow key={week.start}>
                         <TableCell>{week.label}</TableCell>
-                        <TableCell>{rows.length}</TableCell>
-                        <TableCell>{sumMinutes(doneWorkouts(rows))}</TableCell>
+                        <TableCell>{done.length}</TableCell>
+                        <TableCell>{sumMinutes(done)}</TableCell>
                         <TableCell>
                           {completion == null ? "—" : `${completion}%`}
                         </TableCell>
