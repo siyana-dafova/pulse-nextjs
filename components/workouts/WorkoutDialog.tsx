@@ -82,8 +82,10 @@ export function WorkoutDialog({
     workout ? draftFromWorkout(workout) : emptyDraft(todayISO()),
   );
   const [errors, setErrors] = useState<Errors>({});
+  const [saving, setSaving] = useState(false);
 
   async function save() {
+    if (saving) return;
     const nextErrors: Errors = {};
     const name = draft.name.trim();
     const minutes = Number(draft.minutes);
@@ -115,8 +117,13 @@ export function WorkoutDialog({
       distance: draft.type === "cardio" ? distance : undefined,
     };
 
-    if (workout) await updateWorkout(workout.id, input);
-    else await addWorkout(input);
+    setSaving(true);
+    try {
+      if (workout) await updateWorkout(workout.id, input);
+      else await addWorkout(input);
+    } finally {
+      setSaving(false);
+    }
     onOpenChange(false);
   }
 
@@ -262,7 +269,7 @@ export function WorkoutDialog({
           >
             Cancel
           </Button>
-          <Button type="button" onClick={save}>
+          <Button type="submit" disabled={saving}>
             Save
           </Button>
         </ModalFooter>

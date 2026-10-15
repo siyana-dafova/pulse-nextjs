@@ -56,6 +56,7 @@ export function GoalDialog({
   const { goals, addGoal, updateGoal } = useFitness();
   const [draft, setDraft] = useState<Draft>(() => draftFromGoal(goal));
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   function kindDisabled(kind: GoalKind) {
     if (kind === "manual") return false;
@@ -63,6 +64,7 @@ export function GoalDialog({
   }
 
   async function save() {
+    if (saving) return;
     const label = draft.label.trim();
     const target = Number(draft.target);
     const current = Number(draft.current);
@@ -93,6 +95,7 @@ export function GoalDialog({
       kind: draft.kind,
     };
     // The check above uses this tab's list. The store has the final say.
+    setSaving(true);
     try {
       if (goal) await updateGoal(goal.id, input);
       else await addGoal(input);
@@ -102,6 +105,8 @@ export function GoalDialog({
         `A ${goalKindLabels[draft.kind].toLowerCase()} goal already exists.`,
       );
       return;
+    } finally {
+      setSaving(false);
     }
     onOpenChange(false);
   }
@@ -216,7 +221,7 @@ export function GoalDialog({
           >
             Cancel
           </Button>
-          <Button type="button" onClick={save}>
+          <Button type="submit" disabled={saving}>
             Save
           </Button>
         </ModalFooter>
