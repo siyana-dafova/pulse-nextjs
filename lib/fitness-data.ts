@@ -149,6 +149,24 @@ export function formatDisplayDate(iso: string) {
   });
 }
 
+/**
+ * Every word of the query must appear in the name, type, status, or date as the table shows them.
+ * Case does not matter, so "easy RUN" finds "Easy run". An empty query matches everything.
+ */
+export function workoutMatches(workout: Workout, query: string) {
+  const words = query.toLowerCase().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return true;
+  const text = [
+    workout.name,
+    workoutTypeLabels[workout.type],
+    workoutStatusLabels[workout.status],
+    formatDisplayDate(workout.date),
+  ]
+    .join(" ")
+    .toLowerCase();
+  return words.every((word) => text.includes(word));
+}
+
 export function formatWeekday(iso: string) {
   return parseISODate(iso).toLocaleDateString("en-US", { weekday: "short" });
 }

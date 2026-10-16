@@ -30,6 +30,7 @@ import {
   formatDistance,
   workoutStatusLabels,
   workoutTypeLabels,
+  workoutMatches,
   workoutTypes,
   type Workout,
   type WorkoutStatus,
@@ -54,6 +55,8 @@ const statusItems: Record<StatusFilter, string> = {
 export function WorkoutsScreen({ openNew }: { openNew: boolean }) {
   const searchParams = useSearchParams();
   const requested = openNew || searchParams.get("new") === "1";
+  // Written by the header search. Kept in the URL so Back and reload keep the results.
+  const query = searchParams.get("q") ?? "";
   const { workouts, profile, deleteWorkout } = useFitness();
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -78,11 +81,18 @@ export function WorkoutsScreen({ openNew }: { openNew: boolean }) {
     .filter(
       (workout) => statusFilter === "all" || workout.status === statusFilter,
     )
+    .filter((workout) => workoutMatches(workout, query))
     .sort(compareWorkoutNewest);
 
   function openCreate() {
     setEditing(null);
     setFormOpen(true);
+  }
+
+  function clearFilters() {
+    setTypeFilter("all");
+    setStatusFilter("all");
+    if (query) window.history.replaceState(null, "", "/workouts");
   }
 
   return (
@@ -144,7 +154,18 @@ export function WorkoutsScreen({ openNew }: { openNew: boolean }) {
           }
         />
       ) : visible.length === 0 ? (
-        <EmptyState message="No workouts match these filters." />
+        <EmptyState
+          message={
+            query.trim()
+              ? `No workouts match "${query.trim()}".`
+              : "No workouts match these filters."
+          }
+          action={
+            <Button type="button" variant="outline" onClick={clearFilters}>
+              Clear filters
+            </Button>
+          }
+        />
       ) : (
         <Card className="min-w-0">
           <CardContent>
