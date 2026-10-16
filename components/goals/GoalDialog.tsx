@@ -1,8 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Modal, ModalFooter } from "@/components/fitness/modal";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -46,13 +54,37 @@ function draftFromGoal(goal: Goal | null): Draft {
   };
 }
 
+/** Stays mounted so the dialog can animate out and return focus to the button that opened it. */
 export function GoalDialog({
+  open,
   goal,
   onOpenChange,
 }: {
+  open: boolean;
   goal: Goal | null;
   onOpenChange: (open: boolean) => void;
 }) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{goal ? "Edit goal" : "Add goal"}</DialogTitle>
+          <DialogDescription>
+            Workout and minute goals are counted from today&apos;s sessions.
+          </DialogDescription>
+        </DialogHeader>
+        {/* The popup unmounts on close, so the draft starts fresh on every open. The key covers a switch between records. */}
+        <GoalForm
+          key={goal?.id ?? "new"}
+          goal={goal}
+          onDone={() => onOpenChange(false)}
+        />
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function GoalForm({ goal, onDone }: { goal: Goal | null; onDone: () => void }) {
   const { goals, addGoal, updateGoal } = useFitness();
   const [draft, setDraft] = useState<Draft>(() => draftFromGoal(goal));
   const [error, setError] = useState("");
@@ -108,124 +140,108 @@ export function GoalDialog({
     } finally {
       setSaving(false);
     }
-    onOpenChange(false);
+    onDone();
   }
 
   return (
-    <Modal
-      title={goal ? "Edit goal" : "Add goal"}
-      description="Workout and minute goals are counted from today's sessions."
-      onClose={() => onOpenChange(false)}
+    <form
+      className="grid gap-4"
+      onSubmit={(event) => {
+        event.preventDefault();
+        save();
+      }}
     >
-      <form
-        className="grid gap-4"
-        onSubmit={(event) => {
-          event.preventDefault();
-          save();
-        }}
-      >
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="goal-label">Label</Label>
-          <Input
-            id="goal-label"
-            value={draft.label}
-            onChange={(event) =>
-              setDraft((current) => ({ ...current, label: event.target.value }))
-            }
-          />
-        </div>
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="goal-label">Label</Label>
+        <Input
+          id="goal-label"
+          value={draft.label}
+          onChange={(event) =>
+            setDraft((current) => ({ ...current, label: event.target.value }))
+          }
+        />
+      </div>
 
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="goal-target">Target</Label>
+        <Input
+          id="goal-target"
+          type="number"
+          min={1}
+          step="any"
+          value={draft.target}
+          onChange={(event) =>
+            setDraft((current) => ({
+              ...current,
+              target: event.target.value,
+            }))
+          }
+        />
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Label>Kind</Label>
+        <Select
+          items={kindItems}
+          value={draft.kind}
+          onValueChange={(value) => {
+            if (
+              value !== "manual" &&
+              value !== "workouts" &&
+              value !== "minutes"
+            ) {
+              return;
+            }
+            setDraft((current) => ({ ...current, kind: value }));
+            setError("");
+          }}
+        >
+          <SelectTrigger className="w-full" aria-label="Kind">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {kinds.map((kind) => (
+              <SelectItem key={kind} value={kind} disabled={kindDisabled(kind)}>
+                {goalKindLabels[kind]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {draft.kind === "manual" ? (
         <div className="flex flex-col gap-2">
-          <Label htmlFor="goal-target">Target</Label>
+          <Label htmlFor="goal-current">Current</Label>
           <Input
-            id="goal-target"
+            id="goal-current"
             type="number"
-            min={1}
+            min={0}
             step="any"
-            value={draft.target}
+            value={draft.current}
             onChange={(event) =>
               setDraft((current) => ({
                 ...current,
-                target: event.target.value,
+                current: event.target.value,
               }))
             }
           />
         </div>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          Current progress is counted from today&apos;s done workouts.
+        </p>
+      )}
 
-        <div className="flex flex-col gap-2">
-          <Label>Kind</Label>
-          <Select
-            items={kindItems}
-            value={draft.kind}
-            // false: the list sits inside our Modal, not a Base UI Dialog.
-            modal={false}
-            onValueChange={(value) => {
-              if (
-                value !== "manual" &&
-                value !== "workouts" &&
-                value !== "minutes"
-              ) {
-                return;
-              }
-              setDraft((current) => ({ ...current, kind: value }));
-              setError("");
-            }}
-          >
-            <SelectTrigger className="w-full" aria-label="Kind">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {kinds.map((kind) => (
-                <SelectItem
-                  key={kind}
-                  value={kind}
-                  disabled={kindDisabled(kind)}
-                >
-                  {goalKindLabels[kind]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      {error ? <p className="text-xs text-destructive">{error}</p> : null}
 
-        {draft.kind === "manual" ? (
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="goal-current">Current</Label>
-            <Input
-              id="goal-current"
-              type="number"
-              min={0}
-              step="any"
-              value={draft.current}
-              onChange={(event) =>
-                setDraft((current) => ({
-                  ...current,
-                  current: event.target.value,
-                }))
-              }
-            />
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            Current progress is counted from today&apos;s done workouts.
-          </p>
-        )}
-
-        {error ? <p className="text-xs text-destructive">{error}</p> : null}
-
-        <ModalFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" disabled={saving}>
-            Save
-          </Button>
-        </ModalFooter>
-      </form>
-    </Modal>
+      <DialogFooter>
+        <DialogClose render={<Button type="button" variant="outline" />}>
+          Cancel
+        </DialogClose>
+        <Button type="submit" disabled={saving}>
+          Save
+        </Button>
+      </DialogFooter>
+    </form>
   );
 }

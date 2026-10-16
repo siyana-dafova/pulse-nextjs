@@ -60,7 +60,9 @@ export function WorkoutsScreen({ openNew }: { openNew: boolean }) {
   const [formOpen, setFormOpen] = useState(requested);
   const [armed, setArmed] = useState(requested);
   const [editing, setEditing] = useState<Workout | null>(null);
+  // Kept after close so the text does not blank out while the dialog animates away.
   const [pendingDelete, setPendingDelete] = useState<Workout | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   // During render, not in an effect: open the form in the same frame the query arrives.
   if (requested && !armed) {
@@ -193,7 +195,10 @@ export function WorkoutsScreen({ openNew }: { openNew: boolean }) {
                         type="button"
                         size="sm"
                         variant="destructive"
-                        onClick={() => setPendingDelete(workout)}
+                        onClick={() => {
+                          setPendingDelete(workout);
+                          setDeleteOpen(true);
+                        }}
                       >
                         Delete
                       </Button>
@@ -206,29 +211,24 @@ export function WorkoutsScreen({ openNew }: { openNew: boolean }) {
         </Card>
       )}
 
-      {formOpen ? (
-        <WorkoutDialog
-          // A new key resets the draft. Without it, editing keeps the previous record's fields.
-          key={editing?.id ?? "new"}
-          workout={editing}
-          units={profile.units}
-          onOpenChange={setFormOpen}
-        />
-      ) : null}
+      <WorkoutDialog
+        open={formOpen}
+        workout={editing}
+        units={profile.units}
+        onOpenChange={setFormOpen}
+      />
       <ConfirmDialog
-        open={pendingDelete != null}
+        open={deleteOpen}
         title="Delete workout"
         description={
           pendingDelete
             ? `Remove ${pendingDelete.name}? This only updates this browser.`
             : ""
         }
-        onOpenChange={(open) => {
-          if (!open) setPendingDelete(null);
-        }}
+        onOpenChange={setDeleteOpen}
         onConfirm={() => {
           if (pendingDelete) deleteWorkout(pendingDelete.id);
-          setPendingDelete(null);
+          setDeleteOpen(false);
         }}
       />
     </div>

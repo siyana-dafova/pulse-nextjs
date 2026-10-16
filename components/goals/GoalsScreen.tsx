@@ -30,7 +30,9 @@ export function GoalsScreen() {
   const { workouts, goals, profile, updateGoal, deleteGoal } = useFitness();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Goal | null>(null);
+  // Kept after close so the text does not blank out while the dialog animates away.
   const [pendingDelete, setPendingDelete] = useState<Goal | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const today = todayISO();
   const week = weekRange(today);
   const doneThisWeek = doneWorkouts(
@@ -117,7 +119,10 @@ export function GoalsScreen() {
                 setEditing(goal);
                 setFormOpen(true);
               }}
-              onDelete={() => setPendingDelete(goal)}
+              onDelete={() => {
+                setPendingDelete(goal);
+                setDeleteOpen(true);
+              }}
               onCurrentChange={(current) =>
                 updateGoal(goal.id, { ...goal, current })
               }
@@ -126,27 +131,19 @@ export function GoalsScreen() {
         </div>
       )}
 
-      {formOpen ? (
-        <GoalDialog
-          key={editing?.id ?? "new"}
-          goal={editing}
-          onOpenChange={setFormOpen}
-        />
-      ) : null}
+      <GoalDialog open={formOpen} goal={editing} onOpenChange={setFormOpen} />
       <ConfirmDialog
-        open={pendingDelete != null}
+        open={deleteOpen}
         title="Delete goal"
         description={
           pendingDelete
             ? `Remove ${pendingDelete.label}? This only updates this browser.`
             : ""
         }
-        onOpenChange={(open) => {
-          if (!open) setPendingDelete(null);
-        }}
+        onOpenChange={setDeleteOpen}
         onConfirm={() => {
           if (pendingDelete) deleteGoal(pendingDelete.id);
-          setPendingDelete(null);
+          setDeleteOpen(false);
         }}
       />
     </div>

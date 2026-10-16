@@ -1,8 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Modal, ModalFooter } from "@/components/fitness/modal";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -68,14 +76,47 @@ const statusItems = Object.fromEntries(
   workoutStatuses.map((status) => [status, workoutStatusLabels[status]]),
 ) as Record<WorkoutStatus, string>;
 
+/** Stays mounted so the dialog can animate out and return focus to the button that opened it. */
 export function WorkoutDialog({
+  open,
   workout,
   units,
   onOpenChange,
 }: {
+  open: boolean;
   workout: Workout | null;
   units: Units;
   onOpenChange: (open: boolean) => void;
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{workout ? "Edit workout" : "Add workout"}</DialogTitle>
+          <DialogDescription>
+            {workout ? "Update this session." : "Add a session to your log."}
+          </DialogDescription>
+        </DialogHeader>
+        {/* The popup unmounts on close, so the draft starts fresh on every open. The key covers a switch between records. */}
+        <WorkoutForm
+          key={workout?.id ?? "new"}
+          workout={workout}
+          units={units}
+          onDone={() => onOpenChange(false)}
+        />
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function WorkoutForm({
+  workout,
+  units,
+  onDone,
+}: {
+  workout: Workout | null;
+  units: Units;
+  onDone: () => void;
 }) {
   const { addWorkout, updateWorkout } = useFitness();
   const [draft, setDraft] = useState<Draft>(() =>
@@ -124,157 +165,141 @@ export function WorkoutDialog({
     } finally {
       setSaving(false);
     }
-    onOpenChange(false);
+    onDone();
   }
 
   return (
-    <Modal
-      title={workout ? "Edit workout" : "Add workout"}
-      description={
-        workout ? "Update this session." : "Add a session to your log."
-      }
-      onClose={() => onOpenChange(false)}
+    <form
+      className="grid gap-4"
+      onSubmit={(event) => {
+        event.preventDefault();
+        save();
+      }}
     >
-      <form
-        className="grid gap-4"
-        onSubmit={(event) => {
-          event.preventDefault();
-          save();
-        }}
-      >
-        <Field label="Name" error={errors.name}>
-          <Input
-            value={draft.name}
-            onChange={(event) =>
-              setDraft((current) => ({ ...current, name: event.target.value }))
+      <Field label="Name" error={errors.name}>
+        <Input
+          value={draft.name}
+          onChange={(event) =>
+            setDraft((current) => ({ ...current, name: event.target.value }))
+          }
+          aria-invalid={Boolean(errors.name)}
+        />
+      </Field>
+
+      <Field label="Type">
+        <Select
+          items={typeItems}
+          value={draft.type}
+          onValueChange={(value) => {
+            if (
+              value !== "strength" &&
+              value !== "cardio" &&
+              value !== "mobility"
+            ) {
+              return;
             }
-            aria-invalid={Boolean(errors.name)}
-          />
-        </Field>
+            setDraft((current) => ({
+              ...current,
+              type: value,
+              distance: value === "cardio" ? current.distance : "",
+            }));
+          }}
+        >
+          <SelectTrigger className="w-full" aria-label="Type">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {workoutTypes.map((type) => (
+              <SelectItem key={type} value={type}>
+                {workoutTypeLabels[type]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </Field>
 
-        <Field label="Type">
-          <Select
-            items={typeItems}
-            value={draft.type}
-            // false: a modal Base UI select traps focus and fights this Modal.
-            modal={false}
-            onValueChange={(value) => {
-              if (
-                value !== "strength" &&
-                value !== "cardio" &&
-                value !== "mobility"
-              ) {
-                return;
-              }
-              setDraft((current) => ({
-                ...current,
-                type: value,
-                distance: value === "cardio" ? current.distance : "",
-              }));
-            }}
-          >
-            <SelectTrigger className="w-full" aria-label="Type">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {workoutTypes.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {workoutTypeLabels[type]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </Field>
+      <Field label="Date" error={errors.date}>
+        <Input
+          type="date"
+          value={draft.date}
+          onChange={(event) =>
+            setDraft((current) => ({ ...current, date: event.target.value }))
+          }
+          aria-invalid={Boolean(errors.date)}
+        />
+      </Field>
 
-        <Field label="Date" error={errors.date}>
-          <Input
-            type="date"
-            value={draft.date}
-            onChange={(event) =>
-              setDraft((current) => ({ ...current, date: event.target.value }))
-            }
-            aria-invalid={Boolean(errors.date)}
-          />
-        </Field>
+      <Field label="Minutes" error={errors.minutes}>
+        <Input
+          type="number"
+          min={1}
+          step={1}
+          value={draft.minutes}
+          onChange={(event) =>
+            setDraft((current) => ({
+              ...current,
+              minutes: event.target.value,
+            }))
+          }
+          aria-invalid={Boolean(errors.minutes)}
+        />
+      </Field>
 
-        <Field label="Minutes" error={errors.minutes}>
+      {draft.type === "cardio" ? (
+        <Field label={`Distance (${units})`} error={errors.distance}>
           <Input
             type="number"
-            min={1}
-            step={1}
-            value={draft.minutes}
+            min={0}
+            step="0.1"
+            value={draft.distance}
             onChange={(event) =>
               setDraft((current) => ({
                 ...current,
-                minutes: event.target.value,
+                distance: event.target.value,
               }))
             }
-            aria-invalid={Boolean(errors.minutes)}
+            aria-invalid={Boolean(errors.distance)}
           />
         </Field>
+      ) : null}
 
-        {draft.type === "cardio" ? (
-          <Field label={`Distance (${units})`} error={errors.distance}>
-            <Input
-              type="number"
-              min={0}
-              step="0.1"
-              value={draft.distance}
-              onChange={(event) =>
-                setDraft((current) => ({
-                  ...current,
-                  distance: event.target.value,
-                }))
-              }
-              aria-invalid={Boolean(errors.distance)}
-            />
-          </Field>
-        ) : null}
+      <Field label="Status">
+        <Select
+          items={statusItems}
+          value={draft.status}
+          onValueChange={(value) => {
+            if (
+              value !== "done" &&
+              value !== "planned" &&
+              value !== "skipped"
+            ) {
+              return;
+            }
+            setDraft((current) => ({ ...current, status: value }));
+          }}
+        >
+          <SelectTrigger className="w-full" aria-label="Status">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {workoutStatuses.map((status) => (
+              <SelectItem key={status} value={status}>
+                {workoutStatusLabels[status]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </Field>
 
-        <Field label="Status">
-          <Select
-            items={statusItems}
-            value={draft.status}
-            // false: a modal Base UI select traps focus and fights this Modal.
-            modal={false}
-            onValueChange={(value) => {
-              if (
-                value !== "done" &&
-                value !== "planned" &&
-                value !== "skipped"
-              ) {
-                return;
-              }
-              setDraft((current) => ({ ...current, status: value }));
-            }}
-          >
-            <SelectTrigger className="w-full" aria-label="Status">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {workoutStatuses.map((status) => (
-                <SelectItem key={status} value={status}>
-                  {workoutStatusLabels[status]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </Field>
-
-        <ModalFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" disabled={saving}>
-            Save
-          </Button>
-        </ModalFooter>
-      </form>
-    </Modal>
+      <DialogFooter>
+        <DialogClose render={<Button type="button" variant="outline" />}>
+          Cancel
+        </DialogClose>
+        <Button type="submit" disabled={saving}>
+          Save
+        </Button>
+      </DialogFooter>
+    </form>
   );
 }
 

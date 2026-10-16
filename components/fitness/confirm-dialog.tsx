@@ -1,7 +1,15 @@
 "use client";
 
-import { Modal, ModalFooter } from "@/components/fitness/modal";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export function ConfirmDialog({
   open,
@@ -16,22 +24,22 @@ export function ConfirmDialog({
   onConfirm: () => void;
   onOpenChange: (open: boolean) => void;
 }) {
-  if (!open) return null;
-
   return (
-    <Modal
-      title={title}
-      description={description}
-      onClose={() => onOpenChange(false)}
-    >
-      <ModalFooter>
-        <Button variant="outline" onClick={() => onOpenChange(false)}>
-          Cancel
-        </Button>
-        <Button variant="destructive" onClick={onConfirm}>
-          Delete
-        </Button>
-      </ModalFooter>
-    </Modal>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <DialogClose render={<Button variant="outline" />}>
+            Cancel
+          </DialogClose>
+          <Button variant="destructive" onClick={onConfirm}>
+            Delete
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
