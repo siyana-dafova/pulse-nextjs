@@ -180,7 +180,7 @@ function GoalForm({ goal, onDone }: { goal: Goal | null; onDone: () => void }) {
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label>Kind</Label>
+        <Label htmlFor="goal-kind">Kind</Label>
         <Select
           items={kindItems}
           value={draft.kind}
@@ -196,7 +196,7 @@ function GoalForm({ goal, onDone }: { goal: Goal | null; onDone: () => void }) {
             setError("");
           }}
         >
-          <SelectTrigger className="w-full" aria-label="Kind">
+          <SelectTrigger id="goal-kind" className="w-full">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

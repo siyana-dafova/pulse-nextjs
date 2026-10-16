@@ -96,6 +96,7 @@ export function WorkoutsScreen({ openNew }: { openNew: boolean }) {
                 type="button"
                 size="sm"
                 variant={typeFilter === type ? "default" : "outline"}
+                aria-pressed={typeFilter === type}
                 onClick={() => setTypeFilter(type)}
               >
                 {type === "all" ? "All" : workoutTypeLabels[type]}

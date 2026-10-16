@@ -126,14 +126,19 @@ export function SettingsScreen() {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Units</Label>
-            <div className="flex gap-2">
+            <Label id="units-label">Units</Label>
+            <div
+              role="group"
+              aria-labelledby="units-label"
+              className="flex gap-2"
+            >
               {(["km", "mi"] as const).map((option) => (
                 <Button
                   key={option}
                   type="button"
                   size="sm"
                   variant={units === option ? "default" : "outline"}
+                  aria-pressed={units === option}
                   onClick={() => {
                     setUnits(option);
                     markDirty();

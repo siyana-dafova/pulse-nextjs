@@ -75,6 +75,7 @@ export function ReportsScreen() {
             type="button"
             size="sm"
             variant={period === "week" ? "default" : "outline"}
+            aria-pressed={period === "week"}
             onClick={() => setPeriod("week")}
           >
             This week
@@ -83,6 +84,7 @@ export function ReportsScreen() {
             type="button"
             size="sm"
             variant={period === "four" ? "default" : "outline"}
+            aria-pressed={period === "four"}
             onClick={() => setPeriod("four")}
           >
             Last 4 weeks

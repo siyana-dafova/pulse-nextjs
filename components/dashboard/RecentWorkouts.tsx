@@ -1,6 +1,4 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { StatusBadge } from "@/components/fitness/status-badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -18,8 +16,6 @@ import {
 } from "@/lib/fitness-data";
 
 export default function RecentWorkouts({ workouts }: { workouts: Workout[] }) {
-  const router = useRouter();
-
   return (
     <Card>
       <CardHeader>
@@ -41,18 +37,17 @@ export default function RecentWorkouts({ workouts }: { workouts: Workout[] }) {
             </TableHeader>
             <TableBody>
               {workouts.map((workout) => (
-                <TableRow
-                  key={workout.id}
-                  className="cursor-pointer"
-                  tabIndex={0}
-                  // Opens the list, not an editor for this row.
-                  onClick={() => router.push("/workouts")}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") router.push("/workouts");
-                  }}
-                >
+                <TableRow key={workout.id}>
                   <TableCell>{formatDisplayDate(workout.date)}</TableCell>
-                  <TableCell className="font-medium">{workout.name}</TableCell>
+                  <TableCell className="font-medium">
+                    {/* Opens the list, not an editor for this row. */}
+                    <Link
+                      href="/workouts"
+                      className="underline-offset-4 hover:underline"
+                    >
+                      {workout.name}
+                    </Link>
+                  </TableCell>
                   <TableCell className="text-muted-foreground">
                     {workoutTypeLabels[workout.type]}
                   </TableCell>

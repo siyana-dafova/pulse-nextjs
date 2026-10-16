@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -168,6 +168,8 @@ function WorkoutForm({
     onDone();
   }
 
+  const id = useId();
+
   return (
     <form
       className="grid gap-4"
@@ -176,8 +178,9 @@ function WorkoutForm({
         save();
       }}
     >
-      <Field label="Name" error={errors.name}>
+      <Field id={`${id}-name`} label="Name" error={errors.name}>
         <Input
+          id={`${id}-name`}
           value={draft.name}
           onChange={(event) =>
             setDraft((current) => ({ ...current, name: event.target.value }))
@@ -186,7 +189,7 @@ function WorkoutForm({
         />
       </Field>
 
-      <Field label="Type">
+      <Field id={`${id}-type`} label="Type">
         <Select
           items={typeItems}
           value={draft.type}
@@ -205,7 +208,7 @@ function WorkoutForm({
             }));
           }}
         >
-          <SelectTrigger className="w-full" aria-label="Type">
+          <SelectTrigger id={`${id}-type`} className="w-full">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -218,8 +221,9 @@ function WorkoutForm({
         </Select>
       </Field>
 
-      <Field label="Date" error={errors.date}>
+      <Field id={`${id}-date`} label="Date" error={errors.date}>
         <Input
+          id={`${id}-date`}
           type="date"
           value={draft.date}
           onChange={(event) =>
@@ -229,8 +233,9 @@ function WorkoutForm({
         />
       </Field>
 
-      <Field label="Minutes" error={errors.minutes}>
+      <Field id={`${id}-minutes`} label="Minutes" error={errors.minutes}>
         <Input
+          id={`${id}-minutes`}
           type="number"
           min={1}
           step={1}
@@ -246,8 +251,13 @@ function WorkoutForm({
       </Field>
 
       {draft.type === "cardio" ? (
-        <Field label={`Distance (${units})`} error={errors.distance}>
+        <Field
+          id={`${id}-distance`}
+          label={`Distance (${units})`}
+          error={errors.distance}
+        >
           <Input
+            id={`${id}-distance`}
             type="number"
             min={0}
             step="0.1"
@@ -263,7 +273,7 @@ function WorkoutForm({
         </Field>
       ) : null}
 
-      <Field label="Status">
+      <Field id={`${id}-status`} label="Status">
         <Select
           items={statusItems}
           value={draft.status}
@@ -278,7 +288,7 @@ function WorkoutForm({
             setDraft((current) => ({ ...current, status: value }));
           }}
         >
-          <SelectTrigger className="w-full" aria-label="Status">
+          <SelectTrigger id={`${id}-status`} className="w-full">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -303,18 +313,21 @@ function WorkoutForm({
   );
 }
 
+/** `id` must match the control inside, so the label names it and a click on the label focuses it. */
 function Field({
+  id,
   label,
   error,
   children,
 }: {
+  id: string;
   label: string;
   error?: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <Label>{label}</Label>
+      <Label htmlFor={id}>{label}</Label>
       {children}
       {error ? <p className="text-xs text-destructive">{error}</p> : null}
     </div>
