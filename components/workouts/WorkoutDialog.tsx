@@ -162,10 +162,12 @@ function WorkoutForm({
     try {
       if (workout) await updateWorkout(workout.id, input);
       else await addWorkout(input);
+      onDone();
+    } catch {
+      // The provider shows a failed write. Keep the form open.
     } finally {
       setSaving(false);
     }
-    onDone();
   }
 
   const id = useId();

@@ -244,12 +244,13 @@ export function WorkoutsScreen({ openNew }: { openNew: boolean }) {
         title="Delete workout"
         description={
           pendingDelete
-            ? `Remove ${pendingDelete.name}? This only updates this browser.`
+            ? `Remove ${pendingDelete.name}? This deletes it from this browser.`
             : ""
         }
         onOpenChange={setDeleteOpen}
-        onConfirm={() => {
-          if (pendingDelete) deleteWorkout(pendingDelete.id);
+        onConfirm={async () => {
+          if (!pendingDelete) return;
+          await deleteWorkout(pendingDelete.id);
           setDeleteOpen(false);
         }}
       />

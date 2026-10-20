@@ -131,16 +131,17 @@ function GoalForm({ goal, onDone }: { goal: Goal | null; onDone: () => void }) {
     try {
       if (goal) await updateGoal(goal.id, input);
       else await addGoal(input);
+      onDone();
     } catch (caught) {
-      if (!(caught instanceof GoalKindTakenError)) throw caught;
-      setError(
-        `A ${goalKindLabels[draft.kind].toLowerCase()} goal already exists.`,
-      );
-      return;
+      if (caught instanceof GoalKindTakenError) {
+        setError(
+          `A ${goalKindLabels[draft.kind].toLowerCase()} goal already exists.`,
+        );
+      }
+      // Any other failure is shown by the provider. Keep the form open.
     } finally {
       setSaving(false);
     }
-    onDone();
   }
 
   return (

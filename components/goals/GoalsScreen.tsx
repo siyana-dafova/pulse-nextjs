@@ -123,9 +123,11 @@ export function GoalsScreen() {
                 setPendingDelete(goal);
                 setDeleteOpen(true);
               }}
-              onCurrentChange={(current) =>
-                updateGoal(goal.id, { ...goal, current })
-              }
+              onCurrentChange={(current) => {
+                updateGoal(goal.id, { ...goal, current }).catch(() => {
+                  // The provider shows a failed write. The field keeps what was typed.
+                });
+              }}
             />
           ))}
         </div>
@@ -137,12 +139,13 @@ export function GoalsScreen() {
         title="Delete goal"
         description={
           pendingDelete
-            ? `Remove ${pendingDelete.label}? This only updates this browser.`
+            ? `Remove ${pendingDelete.label}? This deletes it from this browser.`
             : ""
         }
         onOpenChange={setDeleteOpen}
-        onConfirm={() => {
-          if (pendingDelete) deleteGoal(pendingDelete.id);
+        onConfirm={async () => {
+          if (!pendingDelete) return;
+          await deleteGoal(pendingDelete.id);
           setDeleteOpen(false);
         }}
       />

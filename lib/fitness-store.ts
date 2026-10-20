@@ -34,7 +34,29 @@ export type FitnessStore = {
   updateGoal(id: string, input: GoalInput): Promise<Goal>;
   deleteGoal(id: string): Promise<void>;
   updateProfile(profile: Profile): Promise<Profile>;
+  /**
+   * Other tabs of this browser. The tab that wrote does not get the event;
+   * it already updated its own state from the method that wrote.
+   */
+  subscribe(onChange: (state: FitnessState) => void): () => void;
 };
+
+/** What to show when a write to localStorage throws. */
+export function saveFailureMessage(error: unknown) {
+  if (isQuotaError(error)) {
+    return "This browser is out of space, so the change was not saved.";
+  }
+  return "The change was not saved. Try again.";
+}
+
+function isQuotaError(error: unknown) {
+  return (
+    error instanceof DOMException &&
+    (error.name === "QuotaExceededError" ||
+      error.name === "NS_ERROR_DOM_QUOTA_REACHED" ||
+      error.code === 22)
+  );
+}
 
 /** Error thrown when a goal kind is already taken. */
 export class GoalKindTakenError extends Error {
@@ -196,5 +218,18 @@ export const localFitnessStore: FitnessStore = {
     };
     write({ ...state, profile });
     return profile;
+  },
+
+  subscribe(onChange) {
+    function handle(event: StorageEvent) {
+      if (event.storageArea !== window.localStorage) return;
+      if (event.key !== STORAGE_KEY) return;
+      const stored = read();
+      // A missing or broken value is left alone. The next load rebuilds the demo set.
+      if (stored) onChange(stored);
+    }
+
+    window.addEventListener("storage", handle);
+    return () => window.removeEventListener("storage", handle);
   },
 };

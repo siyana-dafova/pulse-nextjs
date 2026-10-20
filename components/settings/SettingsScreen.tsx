@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ConfirmDialog } from "@/components/fitness/confirm-dialog";
 import { useFitness } from "@/components/fitness/fitness-context";
 import { PageToolbar } from "@/components/fitness/page-toolbar";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,7 @@ import { initials, type Units } from "@/lib/fitness-data";
  * km/mi only changes the label. The distance number is not converted.
  */
 export function SettingsScreen() {
-  const { profile, updateProfile } = useFitness();
+  const { profile, updateProfile, resetDemo } = useFitness();
   const [name, setName] = useState(profile.name);
   const [email, setEmail] = useState(profile.email);
   const [weeklyGoal, setWeeklyGoal] = useState(
@@ -24,6 +25,7 @@ export function SettingsScreen() {
   const [units, setUnits] = useState<Units>(profile.units);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
+  const [resetOpen, setResetOpen] = useState(false);
 
   function markDirty() {
     setSaved(false);
@@ -51,12 +53,16 @@ export function SettingsScreen() {
       return;
     }
 
-    await updateProfile({
-      name: nextName,
-      email: nextEmail,
-      weeklyWorkoutGoal: goal,
-      units,
-    });
+    try {
+      await updateProfile({
+        name: nextName,
+        email: nextEmail,
+        weeklyWorkoutGoal: goal,
+        units,
+      });
+    } catch {
+      return;
+    }
     setName(nextName);
     setEmail(nextEmail);
     setWeeklyGoal(String(goal));
@@ -159,6 +165,43 @@ export function SettingsScreen() {
         {saved ? <p className="text-sm text-success">Saved.</p> : null}
         {error ? <p className="text-sm text-destructive">{error}</p> : null}
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Demo data</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col items-start gap-3">
+          <p className="text-sm text-muted-foreground">
+            Replace your workouts, goals, and profile with today&apos;s demo
+            set. This stays in this browser.
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setResetOpen(true)}
+          >
+            Reset demo data
+          </Button>
+        </CardContent>
+      </Card>
+
+      <ConfirmDialog
+        open={resetOpen}
+        title="Reset demo data"
+        description="Replace your workouts, goals, and profile with today's demo set. This stays in this browser."
+        confirmLabel="Reset"
+        onOpenChange={setResetOpen}
+        onConfirm={async () => {
+          const state = await resetDemo();
+          setName(state.profile.name);
+          setEmail(state.profile.email);
+          setWeeklyGoal(String(state.profile.weeklyWorkoutGoal));
+          setUnits(state.profile.units);
+          setError("");
+          setSaved(false);
+          setResetOpen(false);
+        }}
+      />
     </div>
   );
 }
