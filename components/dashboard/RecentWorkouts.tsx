@@ -17,7 +17,7 @@ import {
 
 export default function RecentWorkouts({ workouts }: { workouts: Workout[] }) {
   return (
-    <Card>
+    <Card className="min-w-0">
       <CardHeader>
         <CardTitle>Recent workouts</CardTitle>
       </CardHeader>
@@ -30,7 +30,7 @@ export default function RecentWorkouts({ workouts }: { workouts: Workout[] }) {
               <TableRow>
                 <TableHead>Date</TableHead>
                 <TableHead>Workout</TableHead>
-                <TableHead>Type</TableHead>
+                <TableHead className="hidden sm:table-cell">Type</TableHead>
                 <TableHead>Minutes</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
@@ -48,7 +48,7 @@ export default function RecentWorkouts({ workouts }: { workouts: Workout[] }) {
                       {workout.name}
                     </Link>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className="hidden text-muted-foreground sm:table-cell">
                     {workoutTypeLabels[workout.type]}
                   </TableCell>
                   <TableCell>{workout.minutes}</TableCell>

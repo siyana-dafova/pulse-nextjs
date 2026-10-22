@@ -174,9 +174,11 @@ export function WorkoutsScreen({ openNew }: { openNew: boolean }) {
                 <TableRow>
                   <TableHead>Date</TableHead>
                   <TableHead>Workout</TableHead>
-                  <TableHead>Type</TableHead>
+                  <TableHead className="hidden sm:table-cell">Type</TableHead>
                   <TableHead>Minutes</TableHead>
-                  <TableHead>Distance</TableHead>
+                  <TableHead className="hidden sm:table-cell">
+                    Distance
+                  </TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Edit</TableHead>
                   <TableHead>Delete</TableHead>
@@ -189,11 +191,11 @@ export function WorkoutsScreen({ openNew }: { openNew: boolean }) {
                     <TableCell className="font-medium">
                       {workout.name}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="hidden text-muted-foreground sm:table-cell">
                       {workoutTypeLabels[workout.type]}
                     </TableCell>
                     <TableCell>{workout.minutes}</TableCell>
-                    <TableCell>
+                    <TableCell className="hidden sm:table-cell">
                       {formatDistance(workout.distance, profile.units)}
                     </TableCell>
                     <TableCell>

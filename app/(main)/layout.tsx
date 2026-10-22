@@ -15,7 +15,7 @@ export default function MainLayout({ children }: LayoutProps<"/">) {
         <Sidebar />
         <div className="flex min-w-0 flex-1 flex-col">
           <Header />
-          <main className="flex-1 overflow-y-auto p-8">
+          <main className="flex-1 overflow-y-auto p-4 md:p-8">
             <ReadyGate>{children}</ReadyGate>
           </main>
         </div>

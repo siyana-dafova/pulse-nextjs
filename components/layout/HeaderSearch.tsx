@@ -47,7 +47,7 @@ export function HeaderSearch() {
   return (
     <form
       role="search"
-      className="relative ml-auto w-full max-w-xs"
+      className="relative ml-auto min-w-0 w-full max-w-xs flex-1 sm:flex-none"
       onSubmit={(event) => {
         event.preventDefault();
         if (onWorkouts) return;
@@ -78,7 +78,7 @@ export function HeaderSearch() {
 /** Same look while the query is not known yet, so the header does not jump. */
 export function HeaderSearchFallback() {
   return (
-    <div className="relative ml-auto w-full max-w-xs">
+    <div className="relative ml-auto min-w-0 w-full max-w-xs flex-1 sm:flex-none">
       <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
       <input
         type="search"

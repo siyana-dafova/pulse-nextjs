@@ -152,7 +152,7 @@ export function ReportsScreen() {
             </Card>
           </div>
 
-          <Card>
+          <Card className="min-w-0">
             <CardHeader>
               <CardTitle>Weeks</CardTitle>
             </CardHeader>
