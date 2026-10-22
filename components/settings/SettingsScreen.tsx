@@ -13,7 +13,7 @@ import { initials, type Units } from "@/lib/fitness-data";
 /**
  * The draft stays local until Save. The header reads profile from context,
  * so the name there changes only after a successful save.
- * km/mi only changes the label. The distance number is not converted.
+ * Distance is stored in kilometers and shown in the selected unit.
  */
 export function SettingsScreen() {
   const { profile, updateProfile, resetDemo } = useFitness();

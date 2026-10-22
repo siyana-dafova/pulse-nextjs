@@ -197,15 +197,31 @@ export function firstName(name: string) {
   return name.trim().split(/\s+/)[0] || "Pulse";
 }
 
-export function formatDistance(distance: number | undefined, units: Units) {
-  if (distance == null) return "—";
-  const text = Number.isInteger(distance)
-    ? String(distance)
-    : distance.toFixed(1);
-  return `${text} ${units}`;
+/** International mile. A workout always stores distance in kilometers. */
+const KM_PER_MILE = 1.609344;
+
+/**
+ * Stored kilometers in the selected unit, rounded to 0.1.
+ * The tenth matches the distance field, so the list and the form show the same number.
+ */
+export function toDisplayDistance(km: number, units: Units) {
+  const value = units === "mi" ? km / KM_PER_MILE : km;
+  return Math.round(value * 10) / 10;
 }
 
-/** Distance is kept only for cardio and only when it is above 0, so a type change cannot leave a stale value. */
+/** A distance typed in the selected unit, converted back to kilometers. */
+export function fromDisplayDistance(value: number, units: Units) {
+  return units === "mi" ? value * KM_PER_MILE : value;
+}
+
+export function formatDistance(distance: number | undefined, units: Units) {
+  if (distance == null) return "—";
+  const display = toDisplayDistance(distance, units);
+  const text = display.toFixed(1);
+  return `${text.endsWith(".0") ? text.slice(0, -2) : text} ${units}`;
+}
+
+/** Distance is kilometers, kept only for cardio and only when it is above 0, so a type change cannot leave a stale value. */
 export function normalizeWorkout(input: WorkoutInput): Omit<Workout, "id"> {
   const distance =
     input.type === "cardio" && input.distance != null && input.distance > 0

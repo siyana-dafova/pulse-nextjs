@@ -22,7 +22,9 @@ import {
 } from "@/components/ui/select";
 import { useFitness } from "@/components/fitness/fitness-context";
 import {
+  fromDisplayDistance,
   todayISO,
+  toDisplayDistance,
   workoutStatuses,
   workoutStatusLabels,
   workoutTypes,
@@ -57,15 +59,22 @@ function emptyDraft(date: string): Draft {
   };
 }
 
-function draftFromWorkout(workout: Workout): Draft {
+function draftFromWorkout(workout: Workout, units: Units): Draft {
   return {
     name: workout.name,
     type: workout.type,
     date: workout.date,
     minutes: String(workout.minutes),
-    distance: workout.distance == null ? "" : String(workout.distance),
+    distance: distanceDraft(workout.distance, units),
     status: workout.status,
   };
+}
+
+/** Same rounding as `formatDistance`, without the unit label. */
+function distanceDraft(km: number | undefined, units: Units) {
+  if (km == null) return "";
+  const text = toDisplayDistance(km, units).toFixed(1);
+  return text.endsWith(".0") ? text.slice(0, -2) : text;
 }
 
 const typeItems = Object.fromEntries(
@@ -120,7 +129,7 @@ function WorkoutForm({
 }) {
   const { addWorkout, updateWorkout } = useFitness();
   const [draft, setDraft] = useState<Draft>(() =>
-    workout ? draftFromWorkout(workout) : emptyDraft(todayISO()),
+    workout ? draftFromWorkout(workout, units) : emptyDraft(todayISO()),
   );
   const [errors, setErrors] = useState<Errors>({});
   const [saving, setSaving] = useState(false);
@@ -130,7 +139,7 @@ function WorkoutForm({
     const nextErrors: Errors = {};
     const name = draft.name.trim();
     const minutes = Number(draft.minutes);
-    const distance =
+    const entered =
       draft.distance.trim() === "" ? undefined : Number(draft.distance);
 
     if (!name) nextErrors.name = "Enter a name.";
@@ -140,8 +149,8 @@ function WorkoutForm({
     }
     if (
       draft.type === "cardio" &&
-      distance !== undefined &&
-      (!Number.isFinite(distance) || distance <= 0)
+      entered !== undefined &&
+      (!Number.isFinite(entered) || entered <= 0)
     ) {
       nextErrors.distance = "Enter a distance greater than 0.";
     }
@@ -149,6 +158,8 @@ function WorkoutForm({
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
+    const distance =
+      entered === undefined ? undefined : fromDisplayDistance(entered, units);
     const input: WorkoutInput = {
       name,
       type: draft.type,
