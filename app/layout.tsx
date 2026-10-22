@@ -9,7 +9,10 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Pulse",
+  title: {
+    default: "Pulse",
+    template: "%s · Pulse",
+  },
   description: "Track your workouts, progress and daily goals.",
 };
 

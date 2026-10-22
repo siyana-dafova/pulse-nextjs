@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { WorkoutsScreen } from "@/components/workouts/WorkoutsScreen";
+
+export const metadata: Metadata = {
+  title: "Workouts",
+};
 
 /**
  * searchParams is a Promise here. openNew is ready on the screen's first render.
