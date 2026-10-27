@@ -48,32 +48,69 @@ const statusItems: Record<StatusFilter, string> = {
   skipped: workoutStatusLabels.skipped,
 };
 
+const EDIT_REQUEST = "edit:";
+
+/** Blank form for `?new=1`. `edit:<id>` opens that workout. An edit id wins when both are set. */
+function openRequest(create: boolean, editId: string | null) {
+  if (editId) return `${EDIT_REQUEST}${editId}`;
+  if (create) return "new";
+  return null;
+}
+
 /**
- * openNew comes from the server for the first render. searchParams catches a later ?new=1
- * without unmounting. armed keeps the form closed while that query is still in the URL.
+ * `null` opens a blank form. A workout opens that record.
+ * `undefined` means the query is not asking for a form, or the id is missing.
  */
-export function WorkoutsScreen({ openNew }: { openNew: boolean }) {
+function openTarget(
+  request: string | null,
+  workouts: Workout[],
+): Workout | null | undefined {
+  if (request === "new") return null;
+  if (request?.startsWith(EDIT_REQUEST)) {
+    const id = request.slice(EDIT_REQUEST.length);
+    return workouts.find((workout) => workout.id === id);
+  }
+  return undefined;
+}
+
+/**
+ * openNew and editId come from the server for the first render. searchParams catches a later
+ * `?new=1` or `?edit=` without unmounting. handled keeps the form closed while that same query remains.
+ */
+export function WorkoutsScreen({
+  openNew,
+  editId,
+}: {
+  openNew: boolean;
+  editId: string | null;
+}) {
   const searchParams = useSearchParams();
-  const requested = openNew || searchParams.get("new") === "1";
+  // A value from the hook wins. The server prop covers the first render, when the hook can still be empty.
+  const request = openRequest(
+    openNew || searchParams.get("new") === "1",
+    searchParams.get("edit") || editId,
+  );
   // Written by the header search. Kept in the URL so Back and reload keep the results.
   const query = searchParams.get("q") ?? "";
   const { workouts, profile, deleteWorkout } = useFitness();
+  const initial = openTarget(request, workouts);
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
-  const [formOpen, setFormOpen] = useState(requested);
-  const [armed, setArmed] = useState(requested);
-  const [editing, setEditing] = useState<Workout | null>(null);
+  const [formOpen, setFormOpen] = useState(initial !== undefined);
+  const [handled, setHandled] = useState(request);
+  const [editing, setEditing] = useState<Workout | null>(initial ?? null);
   // Kept after close so the text does not blank out while the dialog animates away.
   const [pendingDelete, setPendingDelete] = useState<Workout | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   // During render, not in an effect: open the form in the same frame the query arrives.
-  if (requested && !armed) {
-    setArmed(true);
-    setEditing(null);
-    setFormOpen(true);
-  } else if (!requested && armed) {
-    setArmed(false);
+  if (request !== handled) {
+    setHandled(request);
+    const target = openTarget(request, workouts);
+    if (target !== undefined) {
+      setEditing(target);
+      setFormOpen(true);
+    }
   }
 
   const visible = workouts

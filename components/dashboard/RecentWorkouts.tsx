@@ -40,9 +40,8 @@ export default function RecentWorkouts({ workouts }: { workouts: Workout[] }) {
                 <TableRow key={workout.id}>
                   <TableCell>{formatDisplayDate(workout.date)}</TableCell>
                   <TableCell className="font-medium">
-                    {/* Opens the list, not an editor for this row. */}
                     <Link
-                      href="/workouts"
+                      href={`/workouts?edit=${encodeURIComponent(workout.id)}`}
                       className="underline-offset-4 hover:underline"
                     >
                       {workout.name}
