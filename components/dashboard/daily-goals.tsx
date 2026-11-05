@@ -1,7 +1,7 @@
 import { ProgressBar } from "@/components/fitness/progress-bar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function DailyGoals({
+export function DailyGoals({
   goals,
 }: {
   goals: Array<{ id: string; label: string; current: number; target: number }>;

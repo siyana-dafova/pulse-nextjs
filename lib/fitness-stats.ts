@@ -8,10 +8,10 @@ import {
   formatWeekday,
   formatWeekLabel,
   startOfWeek,
+  workoutTypes,
   type Goal,
   type Trend,
   type Workout,
-  type WorkoutType,
 } from "@/lib/fitness-data";
 
 export type WeekRange = {
@@ -226,7 +226,7 @@ export function dashboardStats(
 
 export function minutesByType(workouts: Workout[]) {
   const done = doneWorkouts(workouts);
-  return (["strength", "cardio", "mobility"] as WorkoutType[]).map((type) => ({
+  return workoutTypes.map((type) => ({
     type,
     minutes: sumMinutes(done.filter((workout) => workout.type === type)),
   }));

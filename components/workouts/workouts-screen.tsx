@@ -7,7 +7,7 @@ import { EmptyState } from "@/components/fitness/empty-state";
 import { useFitness } from "@/components/fitness/fitness-context";
 import { PageToolbar } from "@/components/fitness/page-toolbar";
 import { StatusBadge } from "@/components/fitness/status-badge";
-import { WorkoutDialog } from "@/components/workouts/WorkoutDialog";
+import { WorkoutDialog } from "@/components/workouts/workout-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -28,6 +28,7 @@ import {
 import {
   formatDisplayDate,
   formatDistance,
+  isWorkoutStatus,
   workoutStatusLabels,
   workoutTypeLabels,
   workoutMatches,
@@ -153,12 +154,7 @@ export function WorkoutsScreen({
               items={statusItems}
               value={statusFilter}
               onValueChange={(value) => {
-                if (
-                  value === "all" ||
-                  value === "done" ||
-                  value === "planned" ||
-                  value === "skipped"
-                ) {
+                if (value === "all" || isWorkoutStatus(value)) {
                   setStatusFilter(value);
                 }
               }}

@@ -6,13 +6,13 @@ import { useFitness } from "@/components/fitness/fitness-context";
 import {
   HeaderSearch,
   HeaderSearchFallback,
-} from "@/components/layout/HeaderSearch";
-import { MobileSidebar } from "@/components/layout/Sidebar";
+} from "@/components/layout/header-search";
+import { MobileSidebar } from "@/components/layout/sidebar";
 import { titleForPath } from "@/components/layout/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { firstName, initials } from "@/lib/fitness-data";
 
-export default function Header() {
+export function Header() {
   const pathname = usePathname();
   const title = titleForPath(pathname);
   const { ready, profile } = useFitness();

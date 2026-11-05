@@ -15,7 +15,7 @@ import {
   type Workout,
 } from "@/lib/fitness-data";
 
-export default function RecentWorkouts({ workouts }: { workouts: Workout[] }) {
+export function RecentWorkouts({ workouts }: { workouts: Workout[] }) {
   return (
     <Card className="min-w-0">
       <CardHeader>

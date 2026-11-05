@@ -6,7 +6,7 @@ import { EmptyState } from "@/components/fitness/empty-state";
 import { useFitness } from "@/components/fitness/fitness-context";
 import { PageToolbar } from "@/components/fitness/page-toolbar";
 import { ProgressBar } from "@/components/fitness/progress-bar";
-import { GoalDialog } from "@/components/goals/GoalDialog";
+import { GoalDialog } from "@/components/goals/goal-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Card,

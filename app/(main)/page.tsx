@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DashboardScreen } from "@/components/dashboard/DashboardScreen";
+import { DashboardScreen } from "@/components/dashboard/dashboard-screen";
 
 // Thin page: the calculations live in DashboardScreen and lib/fitness-stats.ts.
 

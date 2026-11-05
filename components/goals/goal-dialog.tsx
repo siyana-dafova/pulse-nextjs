@@ -23,16 +23,16 @@ import {
 import { useFitness } from "@/components/fitness/fitness-context";
 import {
   goalKindLabels,
+  goalKinds,
+  isGoalKind,
   type Goal,
   type GoalInput,
   type GoalKind,
 } from "@/lib/fitness-data";
 import { GoalKindTakenError } from "@/lib/fitness-store";
 
-const kinds: GoalKind[] = ["manual", "workouts", "minutes"];
-
 const kindItems = Object.fromEntries(
-  kinds.map((kind) => [kind, goalKindLabels[kind]]),
+  goalKinds.map((kind) => [kind, goalKindLabels[kind]]),
 ) as Record<GoalKind, string>;
 
 type Draft = {
@@ -186,13 +186,7 @@ function GoalForm({ goal, onDone }: { goal: Goal | null; onDone: () => void }) {
           items={kindItems}
           value={draft.kind}
           onValueChange={(value) => {
-            if (
-              value !== "manual" &&
-              value !== "workouts" &&
-              value !== "minutes"
-            ) {
-              return;
-            }
+            if (!isGoalKind(value)) return;
             setDraft((current) => ({ ...current, kind: value }));
             setError("");
           }}
@@ -201,7 +195,7 @@ function GoalForm({ goal, onDone }: { goal: Goal | null; onDone: () => void }) {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {kinds.map((kind) => (
+            {goalKinds.map((kind) => (
               <SelectItem key={kind} value={kind} disabled={kindDisabled(kind)}>
                 {goalKindLabels[kind]}
               </SelectItem>

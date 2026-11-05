@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
-import { Badge } from "../ui/badge";
-import { Card, CardContent } from "../ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 
 type StatCardProps = {
   label: string;
@@ -9,7 +9,7 @@ type StatCardProps = {
   trend: "up" | "down";
 };
 
-const StatCard = ({ label, value, change, trend }: StatCardProps) => {
+export function StatCard({ label, value, change, trend }: StatCardProps) {
   return (
     <Card>
       <CardContent>
@@ -27,6 +27,4 @@ const StatCard = ({ label, value, change, trend }: StatCardProps) => {
       </CardContent>
     </Card>
   );
-};
-
-export default StatCard;
+}

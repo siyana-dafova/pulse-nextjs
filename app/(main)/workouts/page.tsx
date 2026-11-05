@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { WorkoutsScreen } from "@/components/workouts/WorkoutsScreen";
+import { WorkoutsScreen } from "@/components/workouts/workouts-screen";
 
 export const metadata: Metadata = {
   title: "Workouts",

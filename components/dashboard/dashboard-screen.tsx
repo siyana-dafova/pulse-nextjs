@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { ActivityChart } from "@/components/dashboard/ActivityChart";
-import DailyGoals from "@/components/dashboard/DailyGoals";
-import RecentWorkouts from "@/components/dashboard/RecentWorkouts";
-import StatCard from "@/components/dashboard/StatCard";
+import { ActivityChart } from "@/components/dashboard/activity-chart";
+import { DailyGoals } from "@/components/dashboard/daily-goals";
+import { RecentWorkouts } from "@/components/dashboard/recent-workouts";
+import { StatCard } from "@/components/dashboard/stat-card";
 import { useFitness } from "@/components/fitness/fitness-context";
 import { PageToolbar } from "@/components/fitness/page-toolbar";
 import { buttonVariants } from "@/components/ui/button";

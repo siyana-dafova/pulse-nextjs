@@ -23,6 +23,8 @@ import {
 import { useFitness } from "@/components/fitness/fitness-context";
 import {
   fromDisplayDistance,
+  isWorkoutStatus,
+  isWorkoutType,
   todayISO,
   toDisplayDistance,
   workoutStatuses,
@@ -207,13 +209,7 @@ function WorkoutForm({
           items={typeItems}
           value={draft.type}
           onValueChange={(value) => {
-            if (
-              value !== "strength" &&
-              value !== "cardio" &&
-              value !== "mobility"
-            ) {
-              return;
-            }
+            if (!isWorkoutType(value)) return;
             setDraft((current) => ({
               ...current,
               type: value,
@@ -291,13 +287,7 @@ function WorkoutForm({
           items={statusItems}
           value={draft.status}
           onValueChange={(value) => {
-            if (
-              value !== "done" &&
-              value !== "planned" &&
-              value !== "skipped"
-            ) {
-              return;
-            }
+            if (!isWorkoutStatus(value)) return;
             setDraft((current) => ({ ...current, status: value }));
           }}
         >

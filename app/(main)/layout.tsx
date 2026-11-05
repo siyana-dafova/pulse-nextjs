@@ -1,7 +1,7 @@
 import { FitnessProvider } from "@/components/fitness/fitness-context";
 import { ReadyGate } from "@/components/fitness/ready-gate";
-import Header from "@/components/layout/Header";
-import Sidebar from "@/components/layout/Sidebar";
+import { Header } from "@/components/layout/header";
+import { Sidebar } from "@/components/layout/sidebar";
 
 /**
  * Shared shell for the five screens. The (main) group is not part of the URL.

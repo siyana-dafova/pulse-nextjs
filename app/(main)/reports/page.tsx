@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ReportsScreen } from "@/components/reports/ReportsScreen";
+import { ReportsScreen } from "@/components/reports/reports-screen";
 
 // Thin page. The period and summary live in ReportsScreen.
 

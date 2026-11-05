@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { GoalsScreen } from "@/components/goals/GoalsScreen";
+import { GoalsScreen } from "@/components/goals/goals-screen";
 
 // Thin page. Daily and weekly calculations live in GoalsScreen.
 

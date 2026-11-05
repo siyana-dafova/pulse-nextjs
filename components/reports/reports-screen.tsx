@@ -5,7 +5,7 @@ import Link from "next/link";
 import { EmptyState } from "@/components/fitness/empty-state";
 import { useFitness } from "@/components/fitness/fitness-context";
 import { PageToolbar } from "@/components/fitness/page-toolbar";
-import { MinutesBarChart } from "@/components/reports/MinutesBarChart";
+import { MinutesBarChart } from "@/components/reports/minutes-bar-chart";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {

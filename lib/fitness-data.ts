@@ -56,6 +56,20 @@ export type Profile = {
 
 export const workoutTypes: WorkoutType[] = ["strength", "cardio", "mobility"];
 export const workoutStatuses: WorkoutStatus[] = ["done", "planned", "skipped"];
+export const goalKinds: GoalKind[] = ["manual", "workouts", "minutes"];
+
+/** Narrows a Select value, which arrives untyped. */
+export function isWorkoutType(value: unknown): value is WorkoutType {
+  return workoutTypes.includes(value as WorkoutType);
+}
+
+export function isWorkoutStatus(value: unknown): value is WorkoutStatus {
+  return workoutStatuses.includes(value as WorkoutStatus);
+}
+
+export function isGoalKind(value: unknown): value is GoalKind {
+  return goalKinds.includes(value as GoalKind);
+}
 
 export const workoutTypeLabels: Record<WorkoutType, string> = {
   strength: "Strength",

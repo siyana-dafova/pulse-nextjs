@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { LogOutIcon, MenuIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { SidebarAccount } from "@/components/layout/SidebarAccount";
-import { SidebarNav } from "@/components/layout/SidebarNav";
+import { SidebarAccount } from "@/components/layout/sidebar-account";
+import { SidebarNav } from "@/components/layout/sidebar-nav";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -38,7 +38,7 @@ function SidebarPanel() {
   );
 }
 
-export default function Sidebar() {
+export function Sidebar() {
   return (
     <aside className="hidden h-screen w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:flex">
       <SidebarPanel />
