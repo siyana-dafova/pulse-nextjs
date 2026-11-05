@@ -1,6 +1,10 @@
 "use client";
 
-import { ChartFrame } from "@/components/fitness/chart-frame";
+import {
+  ChartFrame,
+  chartAxisTick,
+  chartTooltipProps,
+} from "@/components/fitness/chart-frame";
 import {
   CartesianGrid,
   Line,
@@ -20,9 +24,17 @@ export function ActivityChart({
       {({ width, height }) => (
         <LineChart width={width} height={height} data={data}>
           <CartesianGrid stroke="var(--border)" vertical={false} />
-          <XAxis dataKey="day" tickLine={false} axisLine={false} />
-          <YAxis tickLine={false} axisLine={false} />
-          <Tooltip />
+          <XAxis
+            dataKey="day"
+            tickLine={false}
+            axisLine={false}
+            tick={chartAxisTick}
+          />
+          <YAxis tickLine={false} axisLine={false} tick={chartAxisTick} />
+          <Tooltip
+            {...chartTooltipProps}
+            cursor={{ stroke: "var(--border)" }}
+          />
           <Line
             type="monotone"
             dataKey="minutes"

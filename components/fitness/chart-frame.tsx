@@ -7,6 +7,19 @@
 
 import { useCallback, useRef, useState, type ReactNode } from "react";
 
+/** Recharts paints fixed grays and a white tooltip. These follow the theme tokens instead. */
+export const chartAxisTick = { fill: "var(--muted-foreground)", fontSize: 12 };
+
+export const chartTooltipProps = {
+  contentStyle: {
+    backgroundColor: "var(--popover)",
+    borderColor: "var(--border)",
+    borderRadius: "var(--radius)",
+    color: "var(--popover-foreground)",
+  },
+  labelStyle: { color: "var(--popover-foreground)" },
+};
+
 export function ChartFrame({
   children,
 }: {

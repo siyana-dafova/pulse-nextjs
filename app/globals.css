@@ -53,6 +53,7 @@
 }
 
 :root {
+  color-scheme: light;
   --background: #f8fafc;
   --foreground: #0f172a;
   --card: #ffffff;
@@ -92,39 +93,44 @@
   --sidebar-ring: #7c3aed;
 }
 
-/* Tokens are defined, but no screen adds the dark class. The app stays on :root. */
+/* Set on <html> by lib/theme.ts. Violet is lighter than in :root so text and lines stay readable on the dark surfaces. */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  color-scheme: dark;
+  --background: #0d0b16;
+  --foreground: #f1f5f9;
+  --card: #161325;
+  --card-foreground: #f1f5f9;
+  --popover: #1b1730;
+  --popover-foreground: #f1f5f9;
+  --primary: #a78bfa;
+  --primary-foreground: #1e1035;
+  --secondary: #221d36;
+  --secondary-foreground: #f1f5f9;
+  --muted: #221d36;
+  --muted-foreground: #a3a0b8;
+  --accent: #2a2245;
+  --accent-foreground: #c4b5fd;
+  --destructive: #f87171;
+  --success: #4ade80;
+  --success-foreground: #052e16;
+  --warning: #fbbf24;
+  --warning-foreground: #1c1917;
+  --border: #2b2640;
+  --input: #332d4a;
+  --ring: #a78bfa;
+  --chart-1: #ddd6fe;
+  --chart-2: #a78bfa;
+  --chart-3: #7c3aed;
+  --chart-4: #c4b5fd;
+  --chart-5: #8b5cf6;
+  --sidebar: #161325;
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-primary: #a78bfa;
+  --sidebar-primary-foreground: #1e1035;
+  --sidebar-accent: #2a2245;
+  --sidebar-accent-foreground: #c4b5fd;
+  --sidebar-border: #2b2640;
+  --sidebar-ring: #a78bfa;
 }
 
 @layer base {

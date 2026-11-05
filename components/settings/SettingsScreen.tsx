@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { ConfirmDialog } from "@/components/fitness/confirm-dialog";
 import { useFitness } from "@/components/fitness/fitness-context";
 import { PageToolbar } from "@/components/fitness/page-toolbar";
@@ -9,6 +9,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { initials, type Units } from "@/lib/fitness-data";
+import {
+  readTheme,
+  saveTheme,
+  subscribeTheme,
+  themeLabels,
+  themes,
+  type Theme,
+} from "@/lib/theme";
+
+function serverTheme(): Theme {
+  return "system";
+}
 
 /**
  * The draft stays local until Save. The header reads profile from context,
@@ -26,6 +38,8 @@ export function SettingsScreen() {
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
+  // Not part of the profile draft: it applies on click and stays when Save is not pressed.
+  const theme = useSyncExternalStore(subscribeTheme, readTheme, serverTheme);
 
   function markDirty() {
     setSaved(false);
@@ -165,6 +179,37 @@ export function SettingsScreen() {
         {saved ? <p className="text-sm text-success">Saved.</p> : null}
         {error ? <p className="text-sm text-destructive">{error}</p> : null}
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Appearance</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-2">
+          <Label id="theme-label">Theme</Label>
+          <div
+            role="group"
+            aria-labelledby="theme-label"
+            aria-describedby="theme-hint"
+            className="flex gap-2"
+          >
+            {themes.map((option) => (
+              <Button
+                key={option}
+                type="button"
+                size="sm"
+                variant={theme === option ? "default" : "outline"}
+                aria-pressed={theme === option}
+                onClick={() => saveTheme(option)}
+              >
+                {themeLabels[option]}
+              </Button>
+            ))}
+          </div>
+          <p id="theme-hint" className="text-sm text-muted-foreground">
+            Applies right away. System follows your device setting.
+          </p>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
