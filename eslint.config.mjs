@@ -14,6 +14,24 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    files: ["**/*.test.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "@/lib/fitness-data",
+              importNames: ["todayISO"],
+              message:
+                "Pass a fixed `today` so the test does not depend on the run date.",
+            },
+          ],
+        },
+      ],
+    },
+  },
   eslintConfigPrettier,
 ]);
 
